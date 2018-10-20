@@ -1,20 +1,24 @@
+//! Face encoding structs.
+
 use std::path::*;
 use std::ops::*;
 use std::slice;
 use std::fmt;
 
-use {path_as_cstring, path_for_file};
+use *;
 use landmark_prediction::*;
 use image_matrix::*;
 
 cpp_class!(unsafe struct FaceEncodingNetworkInner as "face_encoding_nn");
 
+/// A face encoding network.
 #[derive(Clone)]
 pub struct FaceEncodingNetwork {
     inner: FaceEncodingNetworkInner
 }
 
 impl FaceEncodingNetwork {
+    /// Deserialize the face encoding network from a file path.
     pub fn new<P: AsRef<Path>>(filename: P) -> Result<Self, String> {
         let string = path_as_cstring(filename.as_ref())?;
 
@@ -41,6 +45,9 @@ impl FaceEncodingNetwork {
         }
     }
 
+    /// Get a number of face encodings from an image and a list of landmarks, and jitter them a certain amount.
+    /// 
+    /// It is recommended to keep `num_jitters` at 0 unless you know what you're doing. 
     pub fn get_face_encodings(&self, image: &ImageMatrix, landmarks: &[FaceLandmarks], num_jitters: u32) -> FaceEncodings {
         let num_faces = landmarks.len();
         let landmarks = landmarks.as_ptr();
@@ -94,6 +101,7 @@ impl FaceEncodingNetwork {
     }
 }
 
+#[cfg(feature = "download-models")]
 impl Default for FaceEncodingNetwork {
     fn default() -> Self {
         Self::new(path_for_file("dlib_face_recognition_resnet_model_v1.dat")).unwrap()
@@ -101,7 +109,10 @@ impl Default for FaceEncodingNetwork {
 }
 
 
-cpp_class!(pub unsafe struct FaceEncodings as "std::vector<matrix<double,0,1>>");
+cpp_class!(
+    /// A wrapper around a `std::vector<matrix<double,0,1>>`, a vector of encodings.
+    pub unsafe struct FaceEncodings as "std::vector<matrix<double,0,1>>"
+);
 
 impl Deref for FaceEncodings {
     type Target = [FaceEncoding];
@@ -129,6 +140,7 @@ impl Deref for FaceEncodings {
 
 cpp_class!(unsafe struct FaceEncodingInner as "matrix<double,0,1>");
 
+/// A wrapper around a `matrix<double,0,1>>`, an encoding.
 #[derive(Clone)]
 pub struct FaceEncoding {
     inner: FaceEncodingInner

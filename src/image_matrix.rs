@@ -1,7 +1,10 @@
 use image::*;
 use std::ops::*;
 
-cpp_class!(pub unsafe struct ImageMatrix as "matrix<rgb_pixel>");
+cpp_class!(
+    /// A wrapper around a `matrix<rgb_pixel>`, dlibs own image class.
+    pub unsafe struct ImageMatrix as "matrix<rgb_pixel>"
+);
 
 impl ImageMatrix {
     /// Create a new matrix from rgb channel values (r, g, b, r, g, b).

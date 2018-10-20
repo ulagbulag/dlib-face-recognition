@@ -1,6 +1,6 @@
 //! Face detection structs.
 
-use {path_as_cstring, path_for_file, Rectangle};
+use *;
 use image_matrix::*;
 
 use std::ops::*;
@@ -20,6 +20,9 @@ pub struct FaceDetector {
 }
 
 impl FaceDetector {
+    /// Create a new face detector.
+    ///
+    /// This is handles by dlib internally, so you do not need to worry about file paths.
     pub fn new() -> Self {
         let inner = unsafe {
             cpp!([] -> FaceDetectorInner as "frontal_face_detector" {
@@ -32,6 +35,7 @@ impl FaceDetector {
         }
     }
 
+    /// Detect face rectangles from an image.
     pub fn face_locations(&self, image: &ImageMatrix) -> FaceLocations {
         let detector = &self.inner;
 
@@ -111,6 +115,7 @@ impl FaceDetectorCnn {
     }
 }
 
+#[cfg(feature = "download-models")]
 impl Default for FaceDetectorCnn {
     fn default() -> Self {
         Self::new(path_for_file("mmod_human_face_detector.dat")).unwrap()

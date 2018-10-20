@@ -5,6 +5,12 @@ extern crate reqwest;
 extern crate bzip2;
 
 #[cfg(feature = "download-models")]
+fn download_path() -> std::path::PathBuf {
+    std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("files")
+}
+
+#[cfg(feature = "download-models")]
 fn download_and_unzip(client: &reqwest::Client, url: &str) {
     use bzip2::read::*;
 
@@ -15,9 +21,7 @@ fn download_and_unzip(client: &reqwest::Client, url: &str) {
         .last().unwrap()
         .replace(".bz2", "");
 
-    let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("files")
-        .join(&filename);
+    let path = download_path().join(&filename);
 
     if path.exists() {
         println!("Already got '{}'", path.display());
@@ -34,14 +38,22 @@ fn download_and_unzip(client: &reqwest::Client, url: &str) {
 
 fn main() {
     println!("cargo:rustc-link-lib=dlib");
-    // optional
-    println!("cargo:rustc-link-lib=lapack");
-    println!("cargo:rustc-link-lib=blas");
+    
+    // I _believe_ osx requires lapack and blas
+    #[cfg(target_os = "macos")]
+    {
+        println!("cargo:rustc-link-lib=lapack");
+        println!("cargo:rustc-link-lib=blas");
+    }
 
     cpp_build::build("src/lib.rs");
 
     #[cfg(feature = "download-models")]
     {
+        if !download_path().exists() {
+            std::fs::create_dir(download_path()).unwrap();
+        }
+
         // Download the data files
         // I'm not sure if doing this in the build script is such a good idea, seeing as it happens silently,
         // but I dont think adding the files to the repo is good either

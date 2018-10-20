@@ -1,3 +1,18 @@
+//! Face Recognition
+//!
+//! Recognising a face via the dlib models provided takes 4 steps:
+//!
+//! - First, A face has to be detected in an image. This is done by first converting a [image] to dlibs matrix format,
+//! then running it through either of the face detectors.
+//! - Second, face landmarks have to be predicted. This is called prediction because it only really a guess,
+//! and no matter what the number of landmarks returned will be the number of landmarks defined in the model.
+//! This takes an image and a face rectangle and generates a series of landmark points on the face,
+//! nose, mouth, eyes, etc.
+//! - Then the image and these encodings can be run through the face encoding network to generate encodings of the faces.
+//! These encodings consist of 128 floating point numbers that represent the face in 128-dimensional space.
+//! To determine if two face encodings belong to the same face, the euclideon distance between them can be used.
+//! For the dlib encodings, a distance of 0.6 is generally appropriate.
+
 // Ignore the `forget_copy` clippy lint to remove noise from `cargo clippy` output
 #![cfg_attr(feature = "cargo-clippy", allow(forget_copy))]
 
@@ -16,6 +31,7 @@ pub use image_matrix::*;
 use std::path::*;
 use std::ffi::*;
 
+#[cfg(feature = "download-models")]
 fn path_for_file(filename: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("files").join(filename)
 }
@@ -31,7 +47,7 @@ fn path_as_cstring(path: &Path) -> Result<CString, String> {
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 #[repr(C)]
-// A 2D Point.
+/// A 2D Point.
 pub struct Point {
     pub x: i64,
     pub y: i64
@@ -39,7 +55,7 @@ pub struct Point {
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 #[repr(C)]
-// A Rectangle.
+/// A Rectangle.
 pub struct Rectangle {
     pub left: u64,
     pub top: u64,

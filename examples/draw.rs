@@ -25,6 +25,7 @@ fn draw_point(image: &mut RgbImage, point: &Point, colour: Rgb<u8>) {
     image.put_pixel(point.x as u32,     point.y as u32 + 1, colour);
 }
 
+#[cfg(feature = "download-models")]
 fn main() {
     let mut args = std::env::args().skip(1);
     let input = args.next().unwrap();
@@ -65,5 +66,9 @@ fn main() {
     }
 
     image.save(&output).unwrap();
+}
 
+#[cfg(not(feature = "download-models"))]
+fn main() {
+    panic!("You need to run this example with '--features download-models'.");
 }
