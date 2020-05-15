@@ -38,13 +38,8 @@ fn download_and_unzip(client: &reqwest::Client, url: &str) {
 
 fn main() {
     println!("cargo:rustc-link-lib=dlib");
-    
-    // I _believe_ osx requires lapack and blas
-    #[cfg(target_os = "macos")]
-    {
-        println!("cargo:rustc-link-lib=lapack");
-        println!("cargo:rustc-link-lib=blas");
-    }
+    println!("cargo:rustc-link-lib=lapack");
+    println!("cargo:rustc-link-lib=cblas");
 
     cpp_build::build("src/lib.rs");
 
