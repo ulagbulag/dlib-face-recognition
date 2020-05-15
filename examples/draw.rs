@@ -38,8 +38,8 @@ fn main() {
     let cnn_detector = FaceDetectorCnn::default();
     let landmarks = LandmarkPredictor ::default();
 
-    let red = Rgb {data :[255, 0, 0]};
-    let green = Rgb {data: [0, 255, 0]};
+    let red = Rgb([255, 0, 0]);
+    let green = Rgb([0, 255, 0]);
     
     let face_locations = detector.face_locations(&matrix);
 
