@@ -1,5 +1,6 @@
-use image::*;
-use std::ops::*;
+use std::ops::Deref;
+
+use image::{ImageBuffer, Rgb};
 
 cpp_class!(
     /// A wrapper around a `matrix<rgb_pixel>`, dlibs own image class.
@@ -7,6 +8,8 @@ cpp_class!(
 );
 
 impl ImageMatrix {
+    /// # Safety
+    ///
     /// Create a new matrix from rgb channel values (r, g, b, r, g, b).
     ///
     /// Unsafe because we can't check that width * height * 3 <= number of channels
@@ -32,13 +35,11 @@ impl ImageMatrix {
     }
 
     /// Copy a matrix from an rgb image
-    pub fn from_image<C: Deref<Target=[u8]>>(image: &ImageBuffer<Rgb<u8>, C>) -> Self {
+    pub fn from_image<C: Deref<Target = [u8]>>(image: &ImageBuffer<Rgb<u8>, C>) -> Self {
         let width = image.width() as usize;
         let height = image.height() as usize;
         let ptr = image.as_ptr();
 
-        unsafe {
-           Self::new(width, height, ptr) 
-        }
+        unsafe { Self::new(width, height, ptr) }
     }
 }

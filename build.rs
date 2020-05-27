@@ -1,24 +1,19 @@
-extern crate cpp_build;
-#[cfg(feature = "download-models")]
-extern crate reqwest;
-#[cfg(feature = "download-models")]
-extern crate bzip2;
-
-#[cfg(feature = "download-models")]
+#[cfg(feature = "embed-any")]
 fn download_path() -> std::path::PathBuf {
-    std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("files")
+    std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("files")
 }
 
-#[cfg(feature = "download-models")]
+#[cfg(feature = "embed-any")]
 fn download_and_unzip(client: &reqwest::Client, url: &str) {
     use bzip2::read::*;
 
     let url: reqwest::Url = url.parse().unwrap();
 
     let filename = url
-        .path_segments().unwrap()
-        .last().unwrap()
+        .path_segments()
+        .unwrap()
+        .last()
+        .unwrap()
         .replace(".bz2", "");
 
     let path = download_path().join(&filename);
@@ -43,7 +38,7 @@ fn main() {
 
     cpp_build::build("src/lib.rs");
 
-    #[cfg(feature = "download-models")]
+    #[cfg(feature = "embed-any")]
     {
         if !download_path().exists() {
             std::fs::create_dir(download_path()).unwrap();
@@ -58,10 +53,29 @@ fn main() {
             // Turn off gzip decryption
             // See: https://github.com/seanmonstar/reqwest/issues/328
             .gzip(false)
-            .build().unwrap();
+            .build()
+            .unwrap();
 
-        download_and_unzip(&client, "http://dlib.net/files/mmod_human_face_detector.dat.bz2");
-        download_and_unzip(&client, "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2");
-        download_and_unzip(&client, "http://dlib.net/files/dlib_face_recognition_resnet_model_v1.dat.bz2");
+        #[cfg(feature = "embed-fd-nn")]
+        {
+            download_and_unzip(
+                &client,
+                "http://dlib.net/files/mmod_human_face_detector.dat.bz2",
+            );
+        }
+        #[cfg(feature = "embed-fe-nn")]
+        {
+            download_and_unzip(
+                &client,
+                "http://dlib.net/files/dlib_face_recognition_resnet_model_v1.dat.bz2",
+            );
+        }
+        #[cfg(feature = "embed-lp")]
+        {
+            download_and_unzip(
+                &client,
+                "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2",
+            );
+        }
     }
 }

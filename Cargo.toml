@@ -1,21 +1,37 @@
 [package]
-name = "face_recognition"
+name = "dlib-face-recognition"
 version = "0.1.0"
-authors = ["Ashley <expenses@airmail.cc>"]
+authors = ["Ashley <expenses@airmail.cc>", "h <besqer996@gnu.ac.kr>"]
+edition = "2018"
+
+description = "Unofficial Rust wrappers to the C++ library dlib, face recognition tools"
+homepage = "https://github.com/podo-os"
+repository = "https://github.com/podo-os/symengine.rs"
+readme = "README.md"
+license = "BSD-3-Clause"
+
 build = "build.rs"
 
-[dependencies]
-cpp = "0.5.4"
-image = "0.23.4"
-
-[build-dependencies]
-cpp_build = "0.5.4"
-reqwest = {version = "0.9.3", optional = true}
-bzip2 = { version = "0.3.3", optional = true }
-
-[dev-dependencies]
-lazy_static = "1.4.0"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = []
-download-models = ["reqwest", "bzip2"]
+default = ["embed-all"]
+
+embed-all = ["embed-fd-nn", "embed-fe-nn", "embed-lp"]
+embed-any = ["reqwest", "bzip2"]
+
+embed-fd-nn = ["embed-any"]
+embed-fe-nn = ["embed-any"]
+embed-lp = ["embed-any"]
+
+[dependencies]
+cpp = "0.5"
+image = "0.23"
+
+[build-dependencies]
+cpp_build = "0.5"
+bzip2 = { version = "0.3", optional = true }
+reqwest = { version = "0.9", optional = true }
+
+[dev-dependencies]
+lazy_static = "1.4"
