@@ -84,7 +84,7 @@ fn test_face_encoding() {
     let rect = DETECTOR.face_locations(&OBAMA_1_MATRIX)[0];
     let landmarks = PREDICTOR.face_landmarks(&OBAMA_1_MATRIX, &rect);
 
-    MODEL.get_face_encodings(&OBAMA_1_MATRIX, &[landmarks.clone()], 0);
+    MODEL.get_face_encodings(&OBAMA_1_MATRIX, &[landmarks], 0);
 }
 
 #[test]
