@@ -12,6 +12,13 @@ license = "BSD-3-Clause"
 
 build = "build.rs"
 
+include = [
+    "src/**/*.rs",
+    "build.rs",
+    "Cargo.toml",
+    "LICENSE",
+]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
