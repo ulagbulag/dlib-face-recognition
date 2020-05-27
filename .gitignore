@@ -12,7 +12,6 @@ Cargo.lock
 # Editor
 /.vscode/
 
-/assets/
 *.dat
 *.png
 .DS_Store
