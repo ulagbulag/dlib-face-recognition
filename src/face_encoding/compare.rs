@@ -7,7 +7,7 @@ pub struct FaceComparer {
 }
 
 impl FaceComparer {
-    pub fn insert(&self, name: String, value: FaceEncoding) {
+    pub fn insert(&mut self, name: String, value: FaceEncoding) {
         self.keys.push(name);
         self.values.push(value);
     }
