@@ -62,8 +62,3 @@ cpp! {{
         return crops;
     }
 }}
-
-#[cfg(feature = "opencv")]
-cpp! {{
-    #include <dlib/opencv.h>
-}}

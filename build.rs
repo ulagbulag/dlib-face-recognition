@@ -42,6 +42,8 @@ fn main() {
     {
         config.include("/usr/include/opencv4");
 
+        config.file("src/wrapper_cv.h");
+
         println!("cargo:rustc-link-lib=opencv_core");
     }
 

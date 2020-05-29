@@ -42,22 +42,6 @@ impl ImageMatrix {
 
         unsafe { Self::new(width, height, ptr) }
     }
-
-    /// Copy a matrix from an opencv mat
-    #[cfg(feature = "opencv")]
-    pub fn from_opencv_mat(mat: &opencv::prelude::Mat) -> Self {
-        let mat = mat.as_raw_Mat();
-
-        unsafe {
-            cpp!([mat as "const cv::Mat*"] -> ImageMatrix as "dlib::matrix<dlib::rgb_pixel>" {
-                dlib::cv_image<dlib::bgr_pixel> image(*mat);
-                dlib::matrix<dlib::rgb_pixel> out;
-
-                dlib::assign_image(out, image);
-                return out;
-            })
-        }
-    }
 }
 
 impl ImageMatrix {
