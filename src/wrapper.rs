@@ -1,8 +1,9 @@
 cpp! {{
+    #include <dlib/dnn.h>
     #include <dlib/image_processing/frontal_face_detector.h>
     #include <dlib/image_processing/full_object_detection.h>
     #include <dlib/image_transforms.h>
-    #include <dlib/dnn.h>
+    #include <dlib/matrix/matrix_math_functions_abstract.h>
 
     using namespace dlib;
 
