@@ -7,7 +7,7 @@ edition = "2018"
 description = "Unofficial Rust wrappers to the C++ library dlib, face recognition tools"
 homepage = "https://github.com/podo-os"
 repository = "https://github.com/podo-os/dlib-face-recognition"
-readme = "README.md"
+readme = "../README.md"
 license = "BSD-3-Clause"
 
 build = "build.rs"
