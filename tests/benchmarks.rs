@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+#![allow(unused_imports)]
+
 #[macro_use]
 extern crate lazy_static;
 
@@ -14,6 +17,7 @@ fn load_image(filename: &str) -> RgbImage {
     image::open(&path).unwrap().to_rgb()
 }
 
+#[cfg(feature = "embed-all")]
 lazy_static! {
     static ref DETECTOR: FaceDetector = FaceDetector::default();
     static ref DETECTOR_CNN: FaceDetectorCnn = FaceDetectorCnn::default();
@@ -45,6 +49,7 @@ fn initialize() {
     panic!("You need to run these benchmarks with '--features embed-all'.");
 }
 
+#[cfg(feature = "embed-all")]
 #[test]
 fn test_image_matrix_loading() {
     initialize();
@@ -52,6 +57,7 @@ fn test_image_matrix_loading() {
     ImageMatrix::from_image(&OBAMA_1);
 }
 
+#[cfg(feature = "embed-all")]
 #[test]
 fn test_face_detection() {
     initialize();
@@ -69,6 +75,7 @@ fn test_face_detection_cnn(bencher: &mut Bencher) {
 }
 */
 
+#[cfg(feature = "embed-all")]
 #[test]
 fn test_face_landmark_detection() {
     initialize();
@@ -77,6 +84,7 @@ fn test_face_landmark_detection() {
     PREDICTOR.face_landmarks(&OBAMA_1_MATRIX, &rect);
 }
 
+#[cfg(feature = "embed-all")]
 #[test]
 fn test_face_encoding() {
     initialize();
@@ -87,6 +95,7 @@ fn test_face_encoding() {
     MODEL.get_face_encodings(&OBAMA_1_MATRIX, &[landmarks], 0);
 }
 
+#[cfg(feature = "embed-all")]
 #[test]
 fn encoding_distances() {
     initialize();
