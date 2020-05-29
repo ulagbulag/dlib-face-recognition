@@ -16,6 +16,32 @@ pub struct Rectangle {
     pub bottom: i64,
 }
 
+impl Rectangle {
+    pub fn width(&self) -> i64 {
+        self.right - self.left
+    }
+
+    pub fn height(&self) -> i64 {
+        self.bottom - self.top
+    }
+
+    pub fn size(&self) -> (i64, i64) {
+        (self.width(), self.height())
+    }
+
+    pub fn center_x(&self) -> f64 {
+        (self.left + self.right) as f64 / 2.0
+    }
+
+    pub fn center_y(&self) -> f64 {
+        (self.top + self.bottom) as f64 / 2.0
+    }
+
+    pub fn center(&self) -> (f64, f64) {
+        (self.center_x(), self.center_y())
+    }
+}
+
 #[test]
 fn test_default_image() {
     use crate::face_detection::{FaceDetector, FaceDetectorTrait};
