@@ -12,7 +12,7 @@ pub struct LandmarkPredictor {
     inner: LandmarkPredictorInner,
 }
 
-cpp_class!(unsafe struct LandmarkPredictorInner as "shape_predictor");
+cpp_class!(unsafe struct LandmarkPredictorInner as "dlib::shape_predictor");
 
 impl LandmarkPredictor {
     /// Deserialize the landmark predictor from a file path.
@@ -24,11 +24,11 @@ impl LandmarkPredictor {
             let filename = string.as_ptr();
             let predictor = &inner;
 
-            cpp!([filename as "char*", predictor as "shape_predictor*"] -> bool as "bool" {
+            cpp!([filename as "char*", predictor as "dlib::shape_predictor*"] -> bool as "bool" {
                 try {
-                    deserialize(filename) >> *predictor;
+                    dlib::deserialize(filename) >> *predictor;
                     return true;
-                } catch (const error& exception) {
+                } catch (const dlib::error& exception) {
                     return false;
                 }
             })
@@ -60,7 +60,7 @@ impl LandmarkPredictorTrait for LandmarkPredictor {
         let predictor = &self.inner;
 
         unsafe {
-            cpp!([predictor as "shape_predictor*", image as "matrix<rgb_pixel>*", rect as "rectangle*"] -> FaceLandmarks as "full_object_detection" {
+            cpp!([predictor as "dlib::shape_predictor*", image as "dlib::matrix<dlib::rgb_pixel>*", rect as "dlib::rectangle*"] -> FaceLandmarks as "dlib::full_object_detection" {
                 return (*predictor)(*image, *rect);
             })
         }

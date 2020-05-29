@@ -10,10 +10,10 @@ pub struct Point {
 #[repr(C)]
 /// A Rectangle.
 pub struct Rectangle {
-    pub left: u64,
-    pub top: u64,
-    pub right: u64,
-    pub bottom: u64,
+    pub left: i64,
+    pub top: i64,
+    pub right: i64,
+    pub bottom: i64,
 }
 
 #[test]
@@ -34,8 +34,8 @@ fn test_default_image() {
 #[test]
 fn test_point() {
     let point = unsafe {
-        cpp!([] -> Point as "point" {
-            return point(42, -1000);
+        cpp!([] -> Point as "dlib::point" {
+            return dlib::point(42, -1000);
         })
     };
 

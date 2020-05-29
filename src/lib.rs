@@ -32,6 +32,8 @@ mod matrix;
 pub use self::geometry::{Point, Rectangle};
 pub use self::matrix::ImageMatrix;
 
-pub use self::face_detection::{FaceDetector, FaceDetectorCnn, FaceDetectorTrait};
-pub use self::face_encoding::{FaceEncoderNetwork, FaceEncoderTrait, FaceEncoding, FaceComparer};
+pub use self::face_detection::{FaceDetector, FaceDetectorCnn, FaceDetectorTrait, FaceLocations};
+pub use self::face_encoding::{
+    FaceComparer, FaceEncoderNetwork, FaceEncoderTrait, FaceEncoding, FaceEncodings,
+};
 pub use self::landmark_prediction::{LandmarkPredictor, LandmarkPredictorTrait};

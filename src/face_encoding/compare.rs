@@ -22,7 +22,7 @@ impl FaceComparer {
             .map(|(i, f)| (i, f.distance(face)))
             .min_by(|(_, x), (_, y)| x.partial_cmp(y).unwrap())
         {
-            if x >= TOLERANCE {
+            if x <= TOLERANCE {
                 Some(&self.keys[index])
             } else {
                 None

@@ -6,7 +6,7 @@ use crate::geometry::Point;
 cpp_class!(
     /// A wrapper around the dlib `full_object_detection` class, which internally has a `std::vector<point>`.
     /// https://github.com/davisking/dlib/blob/master/dlib/image_processing/full_object_detection.h#L21
-    pub unsafe struct FaceLandmarks as "full_object_detection"
+    pub unsafe struct FaceLandmarks as "dlib::full_object_detection"
 );
 
 impl Deref for FaceLandmarks {
@@ -14,7 +14,7 @@ impl Deref for FaceLandmarks {
 
     fn deref(&self) -> &Self::Target {
         let len = unsafe {
-            cpp!([self as "full_object_detection*"] -> usize as "size_t" {
+            cpp!([self as "dlib::full_object_detection*"] -> usize as "size_t" {
                 return self->num_parts();
             })
         };
@@ -24,7 +24,7 @@ impl Deref for FaceLandmarks {
         } else {
             unsafe {
                 // We can do this because we know that it uses a std::vector internally and part(0) is the first item
-                let pointer = cpp!([self as "full_object_detection*"] -> *const Point as "point*" {
+                let pointer = cpp!([self as "dlib::full_object_detection*"] -> *const Point as "dlib::point*" {
                     return &self->part(0);
                 });
 

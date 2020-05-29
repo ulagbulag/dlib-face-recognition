@@ -27,9 +27,9 @@ impl FaceDetectorCnn {
 
             cpp!([filename as "char*", network as "face_detection_cnn*"] -> bool as "bool" {
                 try {
-                    deserialize(filename) >> *network;
+                    dlib::deserialize(filename) >> *network;
                     return true;
-                } catch (const error& exception) {
+                } catch (const dlib::error& exception) {
                     return false;
                 }
             })
@@ -58,16 +58,16 @@ impl FaceDetectorTrait for FaceDetectorCnn {
         let detector = &self.inner;
 
         unsafe {
-            cpp!([detector as "face_detection_cnn*", image as "matrix<rgb_pixel>*"] -> FaceLocations as "std::vector<rectangle>" {
-                std::vector<mmod_rect> detections = (*detector)(*image);
+            cpp!([detector as "face_detection_cnn*", image as "dlib::matrix<dlib::rgb_pixel>*"] -> FaceLocations as "std::vector<dlib::rectangle>" {
+                std::vector<dlib::mmod_rect> detections = (*detector)(*image);
                 // Convert from mmod rectangles
                 // see: https://github.com/davisking/dlib/blob/master/dlib/image_processing/full_object_detection.h#L132
                 // to regular rectangles
 
-                std::vector<rectangle> rects;
+                std::vector<dlib::rectangle> rects;
                 rects.reserve(detections.size());
 
-                for (mmod_rect &detection: detections) {
+                for (auto &detection: detections) {
                     rects.push_back(detection.rect);
                 }
 

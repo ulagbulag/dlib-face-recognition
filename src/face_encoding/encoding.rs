@@ -8,7 +8,7 @@ pub struct FaceEncoding {
     inner: FaceEncodingInner,
 }
 
-cpp_class!(unsafe struct FaceEncodingInner as "matrix<double,0,1>");
+cpp_class!(unsafe struct FaceEncodingInner as "dlib::matrix<double,0,1>");
 
 impl FaceEncoding {
     /// Create a new encoding initialised with a scalar value.
@@ -16,8 +16,8 @@ impl FaceEncoding {
     /// Mostly used for testing purposes.
     pub fn new_from_scalar(scalar: f64) -> Self {
         let inner = unsafe {
-            cpp!([scalar as "double"] -> FaceEncodingInner as "matrix<double,0,1>" {
-                auto inner = matrix<double,0,1>(128);
+            cpp!([scalar as "double"] -> FaceEncodingInner as "dlib::matrix<double,0,1>" {
+                auto inner = dlib::matrix<double,0,1>(128);
                 for (int i = 0; i < 128; i++) {
                     inner(i) = scalar;
                 }
@@ -35,8 +35,8 @@ impl FaceEncoding {
     /// A good value for this is `0.6`.
     pub fn distance(&self, other: &Self) -> f64 {
         unsafe {
-            cpp!([self as "matrix<double,0,1>*", other as "matrix<double,0,1>*"] -> f64 as "double" {
-                return length(*self - *other);
+            cpp!([self as "const dlib::matrix<double,0,1>*", other as "const dlib::matrix<double,0,1>*"] -> f64 as "double" {
+                return dlib::length(*self - *other);
             })
         }
     }
@@ -49,7 +49,7 @@ impl Deref for FaceEncoding {
         let matrix = &self.inner;
 
         let len = unsafe {
-            cpp!([matrix as "matrix<double,0,1>*"] -> usize as "size_t" {
+            cpp!([matrix as "const dlib::matrix<double,0,1>*"] -> usize as "size_t" {
                 return matrix->size();
             })
         };
@@ -58,7 +58,7 @@ impl Deref for FaceEncoding {
             &[]
         } else {
             unsafe {
-                let pointer = cpp!([matrix as "matrix<double,0,1>*"] -> *const f64 as "double*" {
+                let pointer = cpp!([matrix as "dlib::matrix<double,0,1>*"] -> *const f64 as "double*" {
                     return &(*matrix)(0);
                 });
 

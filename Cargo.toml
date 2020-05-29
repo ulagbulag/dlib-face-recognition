@@ -34,6 +34,7 @@ embed-lp = ["embed-any"]
 [dependencies]
 cpp = "0.5"
 image = "0.23"
+opencv = { version = "0.38", optional = true }
 
 [build-dependencies]
 cpp_build = "0.5"

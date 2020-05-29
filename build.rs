@@ -32,11 +32,20 @@ fn download_and_unzip(client: &reqwest::Client, url: &str) {
 }
 
 fn main() {
+    let mut config = cpp_build::Config::new();
+
     println!("cargo:rustc-link-lib=dlib");
     println!("cargo:rustc-link-lib=lapack");
     println!("cargo:rustc-link-lib=cblas");
 
-    cpp_build::build("src/lib.rs");
+    #[cfg(feature = "opencv")]
+    {
+        config.include("/usr/include/opencv4");
+
+        println!("cargo:rustc-link-lib=opencv_core");
+    }
+
+    config.build("src/lib.rs");
 
     #[cfg(feature = "embed-any")]
     {
@@ -57,25 +66,19 @@ fn main() {
             .unwrap();
 
         #[cfg(feature = "embed-fd-nn")]
-        {
-            download_and_unzip(
-                &client,
-                "http://dlib.net/files/mmod_human_face_detector.dat.bz2",
-            );
-        }
+        download_and_unzip(
+            &client,
+            "http://dlib.net/files/mmod_human_face_detector.dat.bz2",
+        );
         #[cfg(feature = "embed-fe-nn")]
-        {
-            download_and_unzip(
-                &client,
-                "http://dlib.net/files/dlib_face_recognition_resnet_model_v1.dat.bz2",
-            );
-        }
+        download_and_unzip(
+            &client,
+            "http://dlib.net/files/dlib_face_recognition_resnet_model_v1.dat.bz2",
+        );
         #[cfg(feature = "embed-lp")]
-        {
-            download_and_unzip(
-                &client,
-                "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2",
-            );
-        }
+        download_and_unzip(
+            &client,
+            "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2",
+        );
     }
 }

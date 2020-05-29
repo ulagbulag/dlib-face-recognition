@@ -11,7 +11,7 @@ pub struct FaceDetector {
     inner: FaceDetectorInner,
 }
 
-cpp_class!(unsafe struct FaceDetectorInner as "frontal_face_detector");
+cpp_class!(unsafe struct FaceDetectorInner as "dlib::frontal_face_detector");
 
 impl FaceDetector {
     /// Create a new face detector.
@@ -19,8 +19,8 @@ impl FaceDetector {
     /// This is handles by dlib internally, so you do not need to worry about file paths.
     pub fn new() -> Self {
         let inner = unsafe {
-            cpp!([] -> FaceDetectorInner as "frontal_face_detector" {
-                return get_frontal_face_detector();
+            cpp!([] -> FaceDetectorInner as "dlib::frontal_face_detector" {
+                return dlib::get_frontal_face_detector();
             })
         };
 
@@ -39,7 +39,7 @@ impl FaceDetectorTrait for FaceDetector {
         let detector = &self.inner;
 
         unsafe {
-            cpp!([detector as "frontal_face_detector*", image as "matrix<rgb_pixel>*"] -> FaceLocations as "std::vector<rectangle>"  {
+            cpp!([detector as "dlib::frontal_face_detector*", image as "dlib::matrix<dlib::rgb_pixel>*"] -> FaceLocations as "std::vector<dlib::rectangle>"  {
                 return (*detector)(*image);
             })
         }

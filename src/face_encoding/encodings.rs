@@ -5,7 +5,7 @@ use super::encoding::FaceEncoding;
 
 cpp_class!(
     /// A wrapper around a `std::vector<matrix<double,0,1>>`, a vector of encodings.
-    pub unsafe struct FaceEncodings as "std::vector<matrix<double,0,1>>"
+    pub unsafe struct FaceEncodings as "std::vector<dlib::matrix<double,0,1>>"
 );
 
 impl Deref for FaceEncodings {
@@ -13,7 +13,7 @@ impl Deref for FaceEncodings {
 
     fn deref(&self) -> &Self::Target {
         let len = unsafe {
-            cpp!([self as "std::vector<matrix<double,0,1>>*"] -> usize as "size_t" {
+            cpp!([self as "std::vector<dlib::matrix<double,0,1>>*"] -> usize as "size_t" {
                 return self->size();
             })
         };
@@ -22,7 +22,7 @@ impl Deref for FaceEncodings {
             &[]
         } else {
             unsafe {
-                let pointer = cpp!([self as "std::vector<matrix<double,0,1>>*"] -> *const FaceEncoding as "matrix<double,0,1>*" {
+                let pointer = cpp!([self as "std::vector<dlib::matrix<double,0,1>>*"] -> *const FaceEncoding as "dlib::matrix<double,0,1>*" {
                     return &(*self)[0];
                 });
 
