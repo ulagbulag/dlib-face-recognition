@@ -19,6 +19,8 @@
 #[macro_use]
 extern crate cpp;
 
+mod wrapper;
+
 mod base;
 mod embed;
 mod face_detection;
@@ -26,7 +28,6 @@ mod face_encoding;
 mod geometry;
 mod landmark_prediction;
 mod matrix;
-mod wrapper;
 
 pub use self::geometry::{Point, Rectangle};
 pub use self::matrix::ImageMatrix;

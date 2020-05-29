@@ -1,6 +1,7 @@
 cpp! {{
     #include <dlib/image_processing/frontal_face_detector.h>
     #include <dlib/image_processing/full_object_detection.h>
+    #include <dlib/image_transforms.h>
     #include <dlib/dnn.h>
 
     using namespace dlib;

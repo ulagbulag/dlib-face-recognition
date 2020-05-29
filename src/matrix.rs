@@ -43,3 +43,15 @@ impl ImageMatrix {
         unsafe { Self::new(width, height, ptr) }
     }
 }
+
+impl ImageMatrix {
+    pub fn resize(&self, width: usize, height: usize) -> Self {
+        unsafe {
+            cpp!([self as "const matrix<rgb_pixel>*", width as "size_t", height as "size_t"] -> ImageMatrix as "matrix<rgb_pixel>" {
+                matrix<rgb_pixel> out(height, width);
+                resize_image(*self, out);
+                return out;
+            })
+        }
+    }
+}
