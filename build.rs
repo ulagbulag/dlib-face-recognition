@@ -38,15 +38,6 @@ fn main() {
     println!("cargo:rustc-link-lib=lapack");
     println!("cargo:rustc-link-lib=cblas");
 
-    #[cfg(feature = "opencv")]
-    {
-        config.include("/usr/include/opencv4");
-
-        config.file("src/wrapper_cv.h");
-
-        println!("cargo:rustc-link-lib=opencv_core");
-    }
-
     config.build("src/lib.rs");
 
     #[cfg(feature = "embed-any")]
