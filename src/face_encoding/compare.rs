@@ -40,7 +40,7 @@ impl FaceComparer {
         }
     }
 
-    pub fn get_name_unchecked(&mut self, key: &usize) -> &str {
+    pub fn get_name_unchecked(&self, key: &usize) -> &str {
         &self.names[key]
     }
 
