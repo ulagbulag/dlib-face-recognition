@@ -1,5 +1,3 @@
-use std::hash::Hash;
-
 use super::encoding::FaceEncoding;
 
 #[derive(Default)]
