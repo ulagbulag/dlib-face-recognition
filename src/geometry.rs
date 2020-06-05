@@ -56,16 +56,16 @@ impl Rectangle {
         Point::new(self.width(), self.height())
     }
 
-    pub fn center_x(&self) -> i64 {
-        (self.left + self.right) / 2
+    pub fn center_x(&self) -> f64 {
+        (self.left + self.right) as f64 / 2.0
     }
 
-    pub fn center_y(&self) -> i64 {
-        (self.top + self.bottom) / 2
+    pub fn center_y(&self) -> f64 {
+        (self.top + self.bottom) as f64 / 2.0
     }
 
-    pub fn center(&self) -> Point {
-        Point::new(self.center_x(), self.center_y())
+    pub fn center(&self) -> [f64; 2] {
+        [self.center_x(), self.center_y()]
     }
 }
 

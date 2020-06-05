@@ -10,8 +10,8 @@ pub struct FaceComparer {
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct FaceObject<'a> {
-    id: usize,
-    name: &'a str,
+    pub id: usize,
+    pub name: &'a str,
 }
 
 impl FaceComparer {
