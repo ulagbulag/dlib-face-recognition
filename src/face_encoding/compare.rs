@@ -8,19 +8,13 @@ pub struct FaceComparer {
     values: Vec<FaceEncoding>,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct FaceObject<'a> {
-    pub id: usize,
-    pub name: &'a str,
-}
-
 impl FaceComparer {
     pub fn insert(&mut self, name: String, value: FaceEncoding) {
         self.keys.push(name);
         self.values.push(value);
     }
 
-    pub fn find(&self, face: &FaceEncoding) -> Option<FaceObject<'_>> {
+    pub fn find(&self, face: &FaceEncoding) -> Option<usize> {
         const TOLERANCE: f64 = 0.6;
 
         if let Some((index, x)) = self
@@ -31,15 +25,16 @@ impl FaceComparer {
             .min_by(|(_, x), (_, y)| x.partial_cmp(y).unwrap())
         {
             if x <= TOLERANCE {
-                Some(FaceObject {
-                    id: index,
-                    name: &self.keys[index],
-                })
+                Some(index)
             } else {
                 None
             }
         } else {
             None
         }
+    }
+
+    pub fn get_name_unchecked(&self, key: usize) -> &str {
+        &self.keys[key]
     }
 }
