@@ -8,24 +8,43 @@ pub struct FaceEncoding {
     inner: FaceEncodingInner,
 }
 
+pub struct ArraySizeError;
+
 cpp_class!(unsafe struct FaceEncodingInner as "dlib::matrix<double,0,1>");
+
+impl fmt::Display for ArraySizeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Invalid array size provided for from_vec.")
+    }
+}
+
+impl fmt::Debug for ArraySizeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{{ file: {}, line: {} }}", file!(), line!()) // programmer-facing output
+    }
+}
 
 impl FaceEncoding {
     /// Create a new encoding using previously stored values
     /// from a f64 Vec.
-    pub fn from_vec(values: Vec<f64>) -> Self {
-        let inner = unsafe {
-            cpp!([values as "std::vector<double>"] -> FaceEncodingInner as "dlib::matrix<double,0,1>" {
-                auto inner = dlib::matrix<double,0,1>(128);
-                for (int i = 0; i < 128; i++) {
-                    inner(i) = values[i];
-                }
+    pub fn from_vec(values: Vec<f64>) -> Result<Self, ArraySizeError> {
+        match values.len() {
+            128 => {
+                let inner = unsafe {
+                    cpp!([values as "std::vector<double>"] -> FaceEncodingInner as "dlib::matrix<double,0,1>" {
+                        auto inner = dlib::matrix<double,0,1>(128);
+                        for (int i = 0; i < 128; i++) {
+                            inner(i) = values[i];
+                        }
 
-                return inner;
-            })
-        };
+                        return inner;
+                    })
+                };
 
-        Self { inner }
+                Ok(Self { inner })
+            }
+            _ => Err(ArraySizeError),
+        }
     }
 
     /// Create a new encoding initialised with a scalar value.

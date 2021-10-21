@@ -4,6 +4,7 @@
 #[macro_use]
 extern crate lazy_static;
 
+use std::ops::Deref;
 use std::path::*;
 
 use dlib_face_recognition::*;
@@ -14,7 +15,8 @@ fn load_image(filename: &str) -> RgbImage {
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("assets")
         .join(filename);
-    image::open(&path).unwrap().to_rgb()
+    //image::open(&path).unwrap().to_rgb()
+    image::open(&path).unwrap().to_rgb8()
 }
 
 #[cfg(feature = "embed-all")]
@@ -114,4 +116,20 @@ fn encoding_distances() {
 
     let distance = a_encoding.distance(b_encoding);
     assert!(distance > 0.0 && distance < 0.6);
+}
+
+#[cfg(feature = "embed-all")]
+#[test]
+fn encoding_transformation() {
+    let original_array: Vec<f64> = vec![2.5; 128];
+
+    assert_eq!(true, FaceEncoding::from_vec(original_array).is_ok());
+}
+
+#[cfg(feature = "embed-all")]
+#[test]
+fn invalid_array_size() {
+    let original_array: Vec<f64> = vec![2.5; 135];
+
+    assert_eq!(true, FaceEncoding::from_vec(original_array).is_err());
 }

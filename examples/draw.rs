@@ -15,10 +15,10 @@ fn draw_rectangle(image: &mut RgbImage, rect: &Rectangle, colour: Rgb<u8>) {
 }
 
 fn draw_point(image: &mut RgbImage, point: &Point, colour: Rgb<u8>) {
-    image.put_pixel(point.x as u32, point.y as u32, colour);
-    image.put_pixel(point.x as u32 + 1, point.y as u32, colour);
-    image.put_pixel(point.x as u32 + 1, point.y as u32 + 1, colour);
-    image.put_pixel(point.x as u32, point.y as u32 + 1, colour);
+    image.put_pixel(point.x() as u32, point.y() as u32, colour);
+    image.put_pixel(point.x() as u32 + 1, point.y() as u32, colour);
+    image.put_pixel(point.x() as u32 + 1, point.y() as u32 + 1, colour);
+    image.put_pixel(point.x() as u32, point.y() as u32 + 1, colour);
 }
 
 fn tick<R>(name: &str, f: impl Fn() -> R) -> R {
@@ -34,7 +34,8 @@ fn main() {
     let input = args.next().unwrap();
     let output = args.next().unwrap();
 
-    let mut image = image::open(input).unwrap().to_rgb();
+    //let mut image = image::open(input).unwrap().to_rgb();
+    let mut image = image::open(input).unwrap().to_rgb8();
     let matrix = ImageMatrix::from_image(&image);
 
     let detector = FaceDetector::default();
