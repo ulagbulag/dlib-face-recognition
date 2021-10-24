@@ -16,6 +16,11 @@ pub struct FaceDetectorCnn {
 cpp_class!(unsafe struct FaceDetectorCnnInner as "face_detection_cnn");
 
 impl FaceDetectorCnn {
+    pub fn default() -> Result<Self, String> {
+        //FaceDetectorCnn::new("files/mmod_human_face_detector.dat")
+        Self::new("files/mmod_human_face_detector.dat")
+    }
+
     /// Create a new face detector from a filename
     pub fn new<P: AsRef<Path>>(filename: P) -> Result<Self, String> {
         let string = path_as_cstring(filename.as_ref())?;
@@ -46,12 +51,13 @@ impl FaceDetectorCnn {
     }
 }
 
-#[cfg(feature = "embed-fd-nn")]
+/*
 impl Default for FaceDetectorCnn {
-    fn default() -> Self {
-        Self::new(crate::embed::path_for_file("mmod_human_face_detector.dat")).unwrap()
+    fn default() -> Result<Self, String> {
+        Self::new("files/mmod_human_face_detector.dat")
     }
 }
+ */
 
 impl FaceDetectorTrait for FaceDetectorCnn {
     fn face_locations(&self, image: &ImageMatrix) -> FaceLocations {

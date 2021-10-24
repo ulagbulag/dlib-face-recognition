@@ -15,25 +15,20 @@ fn load_image(filename: &str) -> RgbImage {
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("assets")
         .join(filename);
-    //image::open(&path).unwrap().to_rgb()
     image::open(&path).unwrap().to_rgb8()
 }
 
-#[cfg(feature = "embed-all")]
 lazy_static! {
     static ref DETECTOR: FaceDetector = FaceDetector::default();
-    static ref DETECTOR_CNN: FaceDetectorCnn = FaceDetectorCnn::default();
-    static ref PREDICTOR: LandmarkPredictor = LandmarkPredictor::default();
-    static ref MODEL: FaceEncoderNetwork = FaceEncoderNetwork::default();
-//
+    static ref DETECTOR_CNN: FaceDetectorCnn = FaceDetectorCnn::default().unwrap();
+    static ref PREDICTOR: LandmarkPredictor = LandmarkPredictor::default().unwrap();
+    static ref MODEL: FaceEncoderNetwork = FaceEncoderNetwork::default().unwrap();
     static ref OBAMA_1: RgbImage = load_image("obama_1.jpg");
     static ref OBAMA_2: RgbImage = load_image("obama_2.jpg");
-//
     static ref OBAMA_1_MATRIX: ImageMatrix = ImageMatrix::from_image(&OBAMA_1);
     static ref OBAMA_2_MATRIX: ImageMatrix = ImageMatrix::from_image(&OBAMA_2);
 }
 
-#[cfg(feature = "embed-all")]
 fn initialize() {
     lazy_static::initialize(&DETECTOR);
     lazy_static::initialize(&DETECTOR_CNN);
@@ -46,12 +41,6 @@ fn initialize() {
     lazy_static::initialize(&OBAMA_2_MATRIX);
 }
 
-#[cfg(not(feature = "embed-all"))]
-fn initialize() {
-    panic!("You need to run these benchmarks with '--features embed-all'.");
-}
-
-#[cfg(feature = "embed-all")]
 #[test]
 fn test_image_matrix_loading() {
     initialize();
@@ -59,7 +48,6 @@ fn test_image_matrix_loading() {
     ImageMatrix::from_image(&OBAMA_1);
 }
 
-#[cfg(feature = "embed-all")]
 #[test]
 fn test_face_detection() {
     initialize();
@@ -67,17 +55,6 @@ fn test_face_detection() {
     assert_eq!(DETECTOR.face_locations(&OBAMA_1_MATRIX).len(), 1);
 }
 
-// This benchmark is super slow to run, so turn it off by default
-/*
-#[test]
-fn test_face_detection_cnn(bencher: &mut Bencher) {
-    initialize();
-
-    assert_eq!(DETECTOR_CNN.face_locations(&OBAMA_1_MATRIX).len(), 1);
-}
-*/
-
-#[cfg(feature = "embed-all")]
 #[test]
 fn test_face_landmark_detection() {
     initialize();
@@ -86,7 +63,6 @@ fn test_face_landmark_detection() {
     PREDICTOR.face_landmarks(&OBAMA_1_MATRIX, &rect);
 }
 
-#[cfg(feature = "embed-all")]
 #[test]
 fn test_face_encoding() {
     initialize();
@@ -97,7 +73,6 @@ fn test_face_encoding() {
     MODEL.get_face_encodings(&OBAMA_1_MATRIX, &[landmarks], 0);
 }
 
-#[cfg(feature = "embed-all")]
 #[test]
 fn encoding_distances() {
     initialize();
@@ -116,20 +91,4 @@ fn encoding_distances() {
 
     let distance = a_encoding.distance(b_encoding);
     assert!(distance > 0.0 && distance < 0.6);
-}
-
-#[cfg(feature = "embed-all")]
-#[test]
-fn encoding_transformation() {
-    let original_array: Vec<f64> = vec![2.5; 128];
-
-    assert_eq!(true, FaceEncoding::from_vec(original_array).is_ok());
-}
-
-#[cfg(feature = "embed-all")]
-#[test]
-fn invalid_array_size() {
-    let original_array: Vec<f64> = vec![2.5; 135];
-
-    assert_eq!(true, FaceEncoding::from_vec(original_array).is_err());
 }

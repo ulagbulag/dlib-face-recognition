@@ -15,6 +15,11 @@ pub struct LandmarkPredictor {
 cpp_class!(unsafe struct LandmarkPredictorInner as "dlib::shape_predictor");
 
 impl LandmarkPredictor {
+    pub fn default() -> Result<Self, String> {
+        //LandmarkPredictor::new("files/shape_predictor_68_face_landmarks.dat")
+        Self::new("files/shape_predictor_68_face_landmarks.dat")
+    }
+
     /// Deserialize the landmark predictor from a file path.
     pub fn new<P: AsRef<Path>>(filename: P) -> Result<Self, String> {
         let string = path_as_cstring(filename.as_ref())?;
@@ -45,15 +50,14 @@ impl LandmarkPredictor {
     }
 }
 
-#[cfg(feature = "embed-lp")]
+/*
+//#[cfg(feature = "embed-lp")]
 impl Default for LandmarkPredictor {
-    fn default() -> Self {
-        Self::new(crate::embed::path_for_file(
-            "shape_predictor_68_face_landmarks.dat",
-        ))
-        .unwrap()
+    fn default() -> Result<Self, String> {
+        Self::new("files/shape_predictor_68_face_landmarks.dat")
     }
 }
+ */
 
 impl LandmarkPredictorTrait for LandmarkPredictor {
     fn face_landmarks(&self, image: &ImageMatrix, rect: &Rectangle) -> FaceLandmarks {

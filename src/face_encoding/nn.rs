@@ -15,6 +15,10 @@ pub struct FaceEncoderNetwork {
 cpp_class!(unsafe struct FaceEncoderNetworkInner as "face_encoding_nn");
 
 impl FaceEncoderNetwork {
+    pub fn default() -> Result<Self, String> {
+        Self::new("files/dlib_face_recognition_resnet_model_v1.dat")
+    }
+
     /// Deserialize the face encoding network from a file path.
     pub fn new<P: AsRef<Path>>(filename: P) -> Result<Self, String> {
         let string = path_as_cstring(filename.as_ref())?;
@@ -46,6 +50,7 @@ impl FaceEncoderNetwork {
     }
 }
 
+/*
 #[cfg(feature = "embed-fe-nn")]
 impl Default for FaceEncoderNetwork {
     fn default() -> Self {
@@ -55,6 +60,7 @@ impl Default for FaceEncoderNetwork {
         .unwrap()
     }
 }
+ */
 
 impl FaceEncoderTrait for FaceEncoderNetwork {
     fn get_face_encodings(

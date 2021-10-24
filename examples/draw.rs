@@ -21,60 +21,64 @@ fn draw_point(image: &mut RgbImage, point: &Point, colour: Rgb<u8>) {
     image.put_pixel(point.x() as u32, point.y() as u32 + 1, colour);
 }
 
-fn tick<R>(name: &str, f: impl Fn() -> R) -> R {
-    let now = std::time::Instant::now();
-    let result = f();
-    println!("[{}] elapsed time: {}ms", name, now.elapsed().as_millis());
-    result
-}
-
-#[cfg(feature = "embed-all")]
 fn main() {
-    let mut args = std::env::args().skip(1);
-    let input = args.next().unwrap();
-    let output = args.next().unwrap();
+    let input_image = "assets/obama_1.jpg";
+    let output_image = "outputs/obama_1.jpg";
 
-    //let mut image = image::open(input).unwrap().to_rgb();
-    let mut image = image::open(input).unwrap().to_rgb8();
-    let matrix = ImageMatrix::from_image(&image);
+    let mut loaded_image = image::open(input_image).unwrap().to_rgb8();
+    let image_matrix = ImageMatrix::from_image(&loaded_image);
 
-    let detector = FaceDetector::default();
-    let cnn_detector = FaceDetectorCnn::default();
-    let landmarks = LandmarkPredictor::default();
+    let hog_detector = FaceDetector::new();
+    let cnn_detector = FaceDetectorCnn::default().unwrap();
+    let landmark_predictor = LandmarkPredictor::default().unwrap();
 
-    let red = Rgb([255, 0, 0]);
-    let green = Rgb([0, 255, 0]);
+    let color_red = Rgb([255, 0, 0]);
+    let color_green = Rgb([0, 255, 0]);
 
-    let face_locations = tick("FaceDetector", || detector.face_locations(&matrix));
+    let start_time = std::time::Instant::now();
+    let face_locations = hog_detector.face_locations(&image_matrix);
+    let elapsed_time = start_time.elapsed().as_millis();
 
-    for r in face_locations.iter() {
-        draw_rectangle(&mut image, &r, red);
+    println!(
+        "[HoG Face Detector] elapsed time: {time}ms",
+        time = elapsed_time
+    );
 
-        let landmarks = landmarks.face_landmarks(&matrix, &r);
+    for face in face_locations.iter() {
+        draw_rectangle(&mut loaded_image, face, color_red);
+
+        let landmarks = landmark_predictor.face_landmarks(&image_matrix, face);
 
         for point in landmarks.iter() {
-            draw_point(&mut image, &point, red);
+            draw_point(&mut loaded_image, point, color_red);
         }
     }
 
-    let face_locations = tick("FaceDetectorCnn", || cnn_detector.face_locations(&matrix));
+    let start_time = std::time::Instant::now();
+    let face_locations = cnn_detector.face_locations(&image_matrix);
+    let elapsed_time = start_time.elapsed().as_millis();
 
-    for r in face_locations.iter() {
-        draw_rectangle(&mut image, &r, green);
+    println!(
+        "[Cnn Face Detector] elapsed time: {time}ms",
+        time = elapsed_time
+    );
 
-        let landmarks = tick("LandmarkPredictor", || {
-            landmarks.face_landmarks(&matrix, &r)
-        });
+    for face in face_locations.iter() {
+        draw_rectangle(&mut loaded_image, face, color_green);
+
+        let start_time = std::time::Instant::now();
+        let landmarks = landmark_predictor.face_landmarks(&image_matrix, face);
+        let elapsed_time = start_time.elapsed().as_millis();
+
+        println!(
+            "[Landmark Predictor] elapsed time: {time}ms",
+            time = elapsed_time
+        );
 
         for point in landmarks.iter() {
-            draw_point(&mut image, &point, green);
+            draw_point(&mut loaded_image, point, color_green);
         }
     }
 
-    image.save(&output).unwrap();
-}
-
-#[cfg(not(feature = "embed-all"))]
-fn main() {
-    panic!("You need to run this example with '--features embed-all'.");
+    loaded_image.save(&output_image).unwrap();
 }

@@ -1,12 +1,11 @@
 [package]
 name = "dlib-face-recognition"
-version = "0.1.8"
+version = "0.1.9"
 authors = ["Ashley <expenses@airmail.cc>", "h <besqer996@gnu.ac.kr>, João Pedro Sanches Dovichi <jsanchesdovichi@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 description = "Unofficial Rust wrappers to the C++ library dlib, face recognition tools"
-homepage = "https://github.com/podo-os"
-repository = "https://github.com/podo-os/dlib-face-recognition"
+repository = "https://github.com/JSanchesDovichi/dlib-face-recognition"
 readme = "README.md"
 license = "BSD-3-Clause"
 
@@ -19,26 +18,12 @@ include = [
     "LICENSE",
 ]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[features]
-default = []
-
-embed-all = ["embed-fd-nn", "embed-fe-nn", "embed-lp"]
-embed-any = ["reqwest", "bzip2"]
-
-embed-fd-nn = ["embed-any"]
-embed-fe-nn = ["embed-any"]
-embed-lp = ["embed-any"]
-
 [dependencies]
 cpp = "0.5.6"
 image = "0.23.14"
 
 [build-dependencies]
 cpp_build = "0.5.6"
-bzip2 = { version = "0.3", optional = true }
-reqwest = { version = "0.9", optional = true }
 
 [dev-dependencies]
 lazy_static = "1.4"
