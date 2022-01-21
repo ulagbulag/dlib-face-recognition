@@ -3,6 +3,8 @@
 Inspired by [a similar python library](https://github.com/ageitgey/face_recognition), 
 `dlib-face-recognition` is a Rust library that binds to certain specific features of the [dlib C++ library](https://github.com/davisking/dlib).
 
+This repository will dedicate itself to improve the library's content.
+
 These include:
 
 * An FHOG-based face detector.
@@ -42,6 +44,15 @@ cargo build --features embed-all
 ```
 
 ## Testing
+
+There is one included test to recognize, and draw a face's points:
+
+`cargo run --example draw` -> To run the example.
+
+There is two files to benchmark the code, and test some functions:
+
+`cargo test --test benchmarks` -> To run the benchmarks.
+`cargo test --test utilities_tests` -> To run the utilities tester.
 
 ```bash
 cargo test --features embed-all --test benchmarks

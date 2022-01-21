@@ -1,7 +1,7 @@
 [package]
 name = "dlib-face-recognition"
 version = "0.1.7"
-authors = ["Ashley <expenses@airmail.cc>", "Ho Kim <great.ho.kim@gmail.com>"]
+authors = ["Ashley <expenses@airmail.cc>", "Ho Kim <great.ho.kim@gmail.com>", "João Pedro Sanches Dovichi <jsanchesdovichi@gmail.com>"]
 edition = "2021"
 
 description = "Unofficial Rust wrappers to the C++ library dlib, face recognition tools"
@@ -17,7 +17,7 @@ include = ["src/**/*.rs", "build.rs", "Cargo.toml", "LICENSE"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = []
+default = ["embed-all"]
 
 embed-all = ["embed-fd-nn", "embed-fe-nn", "embed-lp"]
 embed-any = ["reqwest", "bzip2"]

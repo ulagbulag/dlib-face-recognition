@@ -14,19 +14,19 @@ fn load_image(filename: &str) -> RgbImage {
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("assets")
         .join(filename);
-    image::open(&path).unwrap().to_rgb()
+    image::open(&path).unwrap().to_rgb8()
 }
 
 #[cfg(feature = "embed-all")]
 lazy_static! {
+    // Models
     static ref DETECTOR: FaceDetector = FaceDetector::default();
     static ref DETECTOR_CNN: FaceDetectorCnn = FaceDetectorCnn::default();
     static ref PREDICTOR: LandmarkPredictor = LandmarkPredictor::default();
     static ref MODEL: FaceEncoderNetwork = FaceEncoderNetwork::default();
-//
+    // Data
     static ref OBAMA_1: RgbImage = load_image("obama_1.jpg");
     static ref OBAMA_2: RgbImage = load_image("obama_2.jpg");
-//
     static ref OBAMA_1_MATRIX: ImageMatrix = ImageMatrix::from_image(&OBAMA_1);
     static ref OBAMA_2_MATRIX: ImageMatrix = ImageMatrix::from_image(&OBAMA_2);
 }
@@ -64,16 +64,6 @@ fn test_face_detection() {
 
     assert_eq!(DETECTOR.face_locations(&OBAMA_1_MATRIX).len(), 1);
 }
-
-// This benchmark is super slow to run, so turn it off by default
-/*
-#[test]
-fn test_face_detection_cnn(bencher: &mut Bencher) {
-    initialize();
-
-    assert_eq!(DETECTOR_CNN.face_locations(&OBAMA_1_MATRIX).len(), 1);
-}
-*/
 
 #[cfg(feature = "embed-all")]
 #[test]

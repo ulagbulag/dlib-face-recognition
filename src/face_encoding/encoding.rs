@@ -1,5 +1,4 @@
 use std::fmt;
-use std::ops::Deref;
 use std::slice;
 
 /// A wrapper around a `matrix<double,0,1>>`, an encoding.
@@ -29,6 +28,28 @@ impl FaceEncoding {
         Self { inner }
     }
 
+    /// Create a new encoding using previously stored values
+    /// from a f64 Vec.
+    pub fn from_vec(values: Vec<f64>) -> Result<Self, ArraySizeError> {
+        match values.len() {
+            128 => {
+                let inner = unsafe {
+                    cpp!([values as "std::vector<double>"] -> FaceEncodingInner as "dlib::matrix<double,0,1>" {
+                        auto inner = dlib::matrix<double,0,1>(128);
+                        for (int i = 0; i < 128; i++) {
+                            inner(i) = values[i];
+                        }
+
+                        return inner;
+                    })
+                };
+
+                Ok(Self { inner })
+            }
+            _ => Err(ArraySizeError),
+        }
+    }
+
     /// Calculate the euclidean distance between two encodings.
     ///
     /// This value can be compared to a constant to determine if the faces are the same or not.
@@ -42,10 +63,20 @@ impl FaceEncoding {
     }
 }
 
-impl Deref for FaceEncoding {
-    type Target = [f64];
+impl fmt::Debug for FaceEncoding {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        self.as_ref().fmt(fmt)
+    }
+}
 
-    fn deref(&self) -> &Self::Target {
+impl PartialEq for FaceEncoding {
+    fn eq(&self, other: &Self) -> bool {
+        self.as_ref().eq(other.as_ref())
+    }
+}
+
+impl AsRef<[f64]> for FaceEncoding {
+    fn as_ref(&self) -> &[f64] {
         let matrix = &self.inner;
 
         let len = unsafe {
@@ -68,15 +99,25 @@ impl Deref for FaceEncoding {
     }
 }
 
-impl fmt::Debug for FaceEncoding {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        self.deref().fmt(fmt)
+impl TryFrom<Vec<f64>> for FaceEncoding {
+    type Error = ArraySizeError;
+
+    fn try_from(value: Vec<f64>) -> Result<Self, Self::Error> {
+        Self::from_vec(value)
     }
 }
 
-impl PartialEq for FaceEncoding {
-    fn eq(&self, other: &Self) -> bool {
-        self.deref().eq(other.deref())
+pub struct ArraySizeError;
+
+impl fmt::Debug for ArraySizeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{{ file: {}, line: {} }}", file!(), line!()) // programmer-facing output
+    }
+}
+
+impl fmt::Display for ArraySizeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Invalid array size provided for from_vec.")
     }
 }
 
