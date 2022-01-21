@@ -29,3 +29,19 @@ This will automatically download the face predictor, cnn face detector and face 
 - Face Recognition Net: http://dlib.net/files/dlib_face_recognition_resnet_model_v1.dat.bz2
 
 If this feature flag is enabled, the matching structs will have `Default::default` implementations provided that allows you to load them without having to worry about file locations.
+
+```bash
+cargo build
+```
+
+## Testing
+
+```bash
+cargo test --test benchmarks
+```
+
+## Examples
+
+```bash
+cargo run --example draw assets/obama_1.jpg outputs/obama_1.jpg
+```
