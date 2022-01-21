@@ -31,6 +31,7 @@ fn download_and_unzip(client: &reqwest::blocking::Client, url: &str) {
     std::io::copy(&mut decoded, &mut file).unwrap();
 }
 
+#[cfg(feature = "build")]
 fn main() {
     println!("cargo:rerun-if-changed=./files");
 
@@ -74,3 +75,6 @@ fn main() {
         );
     }
 }
+
+#[cfg(not(feature = "build"))]
+fn main() {}
