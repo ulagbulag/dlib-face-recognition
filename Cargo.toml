@@ -22,7 +22,7 @@ include = ["src/**/*.rs", "build.rs", "Cargo.toml", "LICENSE"]
 
 [features]
 default = ["build"]
-build = []
+build = ["dlib-face-recognition-sys/build"]
 
 embed-all = ["embed-fd-nn", "embed-fe-nn", "embed-lp"]
 embed-any = ["build", "reqwest", "bzip2"]
@@ -33,7 +33,7 @@ embed-lp = ["embed-any"]
 
 [dependencies]
 cpp = "0.5"
-dlib-face-recognition-sys = { path = "sys", version = "19.22.0-rc.0" }
+dlib-face-recognition-sys = { path = "sys", version = "19.22.0-rc.0", default-features = false }
 image = "0.23"
 
 [build-dependencies]

@@ -14,6 +14,7 @@
 //! For the dlib encodings, a distance of 0.6 is generally appropriate.
 // Ignore the `forget_copy` clippy lint to remove noise from `cargo clippy` output
 
+#![cfg(feature = "build")]
 #![recursion_limit = "1024"]
 
 #[macro_use]
