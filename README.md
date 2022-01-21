@@ -18,6 +18,27 @@ The original working is [here (unmaintaned; since Aug 2021)](https://github.com/
 
 ## Building
 
+### Supported Platforms
+
+* Linux (x64, arm)
+    - Ubuntu 20.04
+* MacOS (arm)
+    - Apple Silicon
+        * Apple M1
+* Windows 10 (x64)
+
+For better maintaining, please let us know whether the other platforms support it.
+Besides, you may claim us whether the specific platform should support it through `Issues` .
+
+### Dependencies
+
+* cmake
+* blas
+* lapack
+
+For Windows, `vcpkg` may help building both `blas` and `lapack` .
+For other platforms such as Linux, package managers should support installing them.
+
 ### Building Native library
 
 `dlib-face-recognition` requires dlib to be installed.
