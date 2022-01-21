@@ -18,7 +18,7 @@ impl FaceEncoding {
         let inner = unsafe {
             cpp!([scalar as "double"] -> FaceEncodingInner as "dlib::matrix<double,0,1>" {
                 auto inner = dlib::matrix<double,0,1>(128);
-                for (int i = 0; i < 128; i++) {
+                for (size_t i = 0; i < 128; i++) {
                     inner(i) = scalar;
                 }
 

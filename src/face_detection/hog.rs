@@ -50,7 +50,7 @@ impl FaceDetectorTrait for FaceDetector {
 fn test_face_detection() {
     use crate::geometry::Rectangle;
 
-    let image = image::open("assets/obama_1.jpg").unwrap().to_rgb();
+    let image = image::open("assets/obama_1.jpg").unwrap().to_rgb8();
     let matrix = ImageMatrix::from_image(&image);
     let detector = FaceDetector::new();
 

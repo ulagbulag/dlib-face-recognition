@@ -1,34 +1,34 @@
-use std::ops::Deref;
+use std::{ops::Deref, os::raw::c_long};
 
 #[derive(Copy, Clone, Default, Debug, PartialEq, Eq)]
 #[repr(C)]
 /// A 2D Point.
-pub struct Point([i64; 2]);
+pub struct Point([c_long; 2]);
 
-impl AsRef<[i64]> for Point {
-    fn as_ref(&self) -> &[i64] {
+impl AsRef<[c_long]> for Point {
+    fn as_ref(&self) -> &[c_long] {
         &self.0
     }
 }
 
 impl Deref for Point {
-    type Target = [i64; 2];
+    type Target = [c_long; 2];
 
-    fn deref(&self) -> &[i64; 2] {
+    fn deref(&self) -> &[c_long; 2] {
         &self.0
     }
 }
 
 impl Point {
-    pub fn new(x: i64, y: i64) -> Self {
+    pub fn new(x: c_long, y: c_long) -> Self {
         Self([x, y])
     }
 
-    pub fn x(&self) -> i64 {
+    pub fn x(&self) -> c_long {
         self.0[0]
     }
 
-    pub fn y(&self) -> i64 {
+    pub fn y(&self) -> c_long {
         self.0[1]
     }
 }
@@ -37,18 +37,18 @@ impl Point {
 #[repr(C)]
 /// A Rectangle.
 pub struct Rectangle {
-    pub left: i64,
-    pub top: i64,
-    pub right: i64,
-    pub bottom: i64,
+    pub left: c_long,
+    pub top: c_long,
+    pub right: c_long,
+    pub bottom: c_long,
 }
 
 impl Rectangle {
-    pub fn width(&self) -> i64 {
+    pub fn width(&self) -> c_long {
         self.right - self.left
     }
 
-    pub fn height(&self) -> i64 {
+    pub fn height(&self) -> c_long {
         self.bottom - self.top
     }
 
@@ -92,5 +92,5 @@ fn test_point() {
         })
     };
 
-    assert_eq!(point, Point { x: 42, y: -1000 });
+    assert_eq!(point, Point([42, -1000]));
 }

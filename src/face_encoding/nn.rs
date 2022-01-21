@@ -73,7 +73,7 @@ impl FaceEncoderTrait for FaceEncoderNetwork {
                     image as "dlib::matrix<dlib::rgb_pixel>*",
                     landmarks as "dlib::full_object_detection*",
                     num_faces as "size_t",
-                    num_jitters as "uint"
+                    num_jitters as "uint32_t"
                 ] -> FaceEncodings as "std::vector<dlib::matrix<double,0,1>>" {
                 std::vector<dlib::matrix<double,0,1>> encodings;
                 encodings.reserve(num_faces);

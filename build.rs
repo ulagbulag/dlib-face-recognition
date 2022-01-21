@@ -4,7 +4,7 @@ fn download_path() -> std::path::PathBuf {
 }
 
 #[cfg(feature = "embed-any")]
-fn download_and_unzip(client: &reqwest::Client, url: &str) {
+fn download_and_unzip(client: &reqwest::blocking::Client, url: &str) {
     use bzip2::read::*;
 
     let url: reqwest::Url = url.parse().unwrap();
@@ -32,12 +32,14 @@ fn download_and_unzip(client: &reqwest::Client, url: &str) {
 }
 
 fn main() {
-    let mut config = cpp_build::Config::new();
-
     println!("cargo:rustc-link-lib=dlib");
-    println!("cargo:rustc-link-lib=lapack");
-    println!("cargo:rustc-link-lib=cblas");
+    // println!("cargo:rustc-link-lib=lapack");
+    // println!("cargo:rustc-link-lib=cblas");
 
+    let mut config = cpp_build::Config::new();
+    if let Ok(value) = std::env::var("DEP_DLIB_INCLUDE") {
+        config.include(value);
+    }
     config.build("src/lib.rs");
 
     #[cfg(feature = "embed-any")]
@@ -51,12 +53,7 @@ fn main() {
         // but I dont think adding the files to the repo is good either
 
         // Create a client for maintaining connections
-        let client = reqwest::ClientBuilder::new()
-            // Turn off gzip decryption
-            // See: https://github.com/seanmonstar/reqwest/issues/328
-            .gzip(false)
-            .build()
-            .unwrap();
+        let client = reqwest::blocking::ClientBuilder::new().build().unwrap();
 
         #[cfg(feature = "embed-fd-nn")]
         download_and_unzip(

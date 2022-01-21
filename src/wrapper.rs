@@ -8,17 +8,17 @@ cpp! {{
     // face encoding network definition from
     // https://github.com/davisking/dlib/blob/master/tools/python/src/face_recognition.cpp
 
-    template <template <int,template<typename>class,int,typename> class block, int N, template<typename>class BN, typename SUBNET>
+    template <template <int32_t,template<typename>class,int32_t,typename> class block, int32_t N, template<typename>class BN, typename SUBNET>
     using residual = dlib::add_prev1<block<N,BN,1,dlib::tag1<SUBNET>>>;
 
-    template <template <int,template<typename>class,int,typename> class block, int N, template<typename>class BN, typename SUBNET>
+    template <template <int32_t,template<typename>class,int32_t,typename> class block, int32_t N, template<typename>class BN, typename SUBNET>
     using residual_down = dlib::add_prev2<dlib::avg_pool<2,2,2,2,dlib::skip1<dlib::tag2<block<N,BN,2,dlib::tag1<SUBNET>>>>>>;
 
-    template <int N, template <typename> class BN, int stride, typename SUBNET>
+    template <int32_t N, template <typename> class BN, int32_t stride, typename SUBNET>
     using block  = BN<dlib::con<N,3,3,1,1,dlib::relu<BN<dlib::con<N,3,3,stride,stride,SUBNET>>>>>;
 
-    template <int N, typename SUBNET> using ares      = dlib::relu<residual<block,N,dlib::affine,SUBNET>>;
-    template <int N, typename SUBNET> using ares_down = dlib::relu<residual_down<block,N,dlib::affine,SUBNET>>;
+    template <int32_t N, typename SUBNET> using ares      = dlib::relu<residual<block,N,dlib::affine,SUBNET>>;
+    template <int32_t N, typename SUBNET> using ares_down = dlib::relu<residual_down<block,N,dlib::affine,SUBNET>>;
 
     template <typename SUBNET> using alevel0 = ares_down<256,SUBNET>;
     template <typename SUBNET> using alevel1 = ares<256,ares<256,ares_down<256,SUBNET>>>;
@@ -54,9 +54,9 @@ cpp! {{
     dlib::rand rnd;
 
     // https://github.com/davisking/dlib/blob/master/tools/python/src/face_recognition.cpp#L131
-    std::vector<dlib::matrix<dlib::rgb_pixel>> jitter_image(const dlib::matrix<dlib::rgb_pixel>& img, const int num_jitters) {
+    std::vector<dlib::matrix<dlib::rgb_pixel>> jitter_image(const dlib::matrix<dlib::rgb_pixel>& img, const uint32_t num_jitters) {
         std::vector<dlib::matrix<dlib::rgb_pixel>> crops;
-        for (int i = 0; i < num_jitters; ++i) {
+        for (uint32_t i = 0; i < num_jitters; ++i) {
             crops.push_back(dlib::jitter_image(img, rnd));
         }
         return crops;
