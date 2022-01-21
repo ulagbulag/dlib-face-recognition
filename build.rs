@@ -32,9 +32,11 @@ fn download_and_unzip(client: &reqwest::blocking::Client, url: &str) {
 }
 
 fn main() {
+    println!("cargo:rerun-if-changed=./files");
+
     println!("cargo:rustc-link-lib=dlib");
-    // println!("cargo:rustc-link-lib=lapack");
-    // println!("cargo:rustc-link-lib=cblas");
+    println!("cargo:rustc-link-lib=blas");
+    println!("cargo:rustc-link-lib=lapack");
 
     let mut config = cpp_build::Config::new();
     if let Ok(value) = std::env::var("DEP_DLIB_INCLUDE") {

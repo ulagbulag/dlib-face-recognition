@@ -1,7 +1,11 @@
 [package]
 name = "dlib-face-recognition"
 version = "0.1.7"
-authors = ["Ashley <expenses@airmail.cc>", "Ho Kim <great.ho.kim@gmail.com>", "João Pedro Sanches Dovichi <jsanchesdovichi@gmail.com>"]
+authors = [
+    "Ashley <expenses@airmail.cc>",
+    "Ho Kim <great.ho.kim@gmail.com>",
+    "João Pedro Sanches Dovichi <jsanchesdovichi@gmail.com>",
+]
 edition = "2021"
 
 description = "Unofficial Rust wrappers to the C++ library dlib, face recognition tools"

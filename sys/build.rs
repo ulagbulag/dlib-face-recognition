@@ -1,16 +1,14 @@
+#[cfg(feature = "build")]
 fn download_and_unzip(version: &str) -> std::path::PathBuf {
     let url = format!("http://dlib.net/files/dlib-{}.zip", version);
     let url: reqwest::Url = url.parse().unwrap();
 
-    let root_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("files");
+    let root_dir = std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap());
     let path = root_dir.join(format!("dlib-{}", version));
 
     if path.exists() {
         eprintln!("Already got '{}'", path.display());
         return path;
-    }
-    if !root_dir.exists() {
-        std::fs::create_dir(&root_dir).unwrap();
     }
 
     eprintln!("Downloading '{}'...", url);
@@ -26,6 +24,7 @@ fn download_and_unzip(version: &str) -> std::path::PathBuf {
     path
 }
 
+#[cfg(feature = "build")]
 fn main() {
     // Configure
     let version_major = env!("CARGO_PKG_VERSION_MAJOR");
@@ -59,15 +58,25 @@ fn main() {
     // Copy the library file
     let dst_lib = &dst;
     let src_lib_dir = dst.join("build").join("dlib_build");
-    let suffix = if cfg!(windows) { "lib" } else { "a" };
-    let src_lib = glob::glob(&format!("{}/**/*.{}", src_lib_dir.display(), &suffix))
-        .expect("Failed to read glob pattern")
-        .into_iter()
-        .filter_map(Result::ok)
-        .next()
-        .expect("Failed to find library file");
+    let src_lib_prefix = if cfg!(windows) { "" } else { "lib" };
+    let src_lib_suffix = if cfg!(windows) { "lib" } else { "a" };
+    let src_lib = glob::glob(&format!(
+        "{}/**/{}dlib*.{}",
+        src_lib_dir.display(),
+        &src_lib_prefix,
+        &src_lib_suffix
+    ))
+    .expect("Failed to read glob pattern")
+    .into_iter()
+    .filter_map(Result::ok)
+    .next()
+    .expect("Failed to find library file");
     std::fs::create_dir_all(&dst_lib).unwrap();
-    std::fs::copy(&src_lib, dst_lib.join(format!("dlib.{}", &suffix))).unwrap();
+    std::fs::copy(
+        &src_lib,
+        dst_lib.join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix)),
+    )
+    .unwrap();
 
     // Copy header files
     let dst_include = dst.join("include");
@@ -85,9 +94,12 @@ fn main() {
     // Link
     println!("cargo:rustc-link-search=native={}", dst.display());
     println!("cargo:rustc-link-lib=dlib");
-    // println!("cargo:rustc-link-lib=lapack");
-    // println!("cargo:rustc-link-lib=cblas");
+    println!("cargo:rustc-link-lib=blas");
+    println!("cargo:rustc-link-lib=lapack");
 
     println!("cargo:root={}", dst.display());
     println!("cargo:include={}", dst_include.display());
 }
+
+#[cfg(not(feature = "build"))]
+fn main() {}

@@ -15,7 +15,15 @@ links = "dlib"
 
 include = ["src/**/*.rs", "build.rs", "Cargo.toml", "LICENSE"]
 
+[lib]
+doctest = false
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = ["build"]
+
+build = []
 
 [dependencies]
 
