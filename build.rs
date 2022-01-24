@@ -40,8 +40,10 @@ fn main() {
     println!("cargo:rustc-link-lib=lapack");
 
     let mut config = cpp_build::Config::new();
-    if let Ok(value) = std::env::var("DEP_DLIB_INCLUDE") {
-        config.include(value);
+    if let Ok(paths) = std::env::var("DEP_DLIB_INCLUDE") {
+        for path in std::env::split_paths(&paths) {
+            config.include(path);
+        }
     }
     config.build("src/lib.rs");
 
