@@ -36,8 +36,8 @@ fn main() {
     println!("cargo:rerun-if-changed=./files");
 
     println!("cargo:rustc-link-lib=dlib");
-    println!("cargo:rustc-link-lib=blas");
     println!("cargo:rustc-link-lib=lapack");
+    println!("cargo:rustc-link-lib=cblas");
 
     let mut config = cpp_build::Config::new();
     if let Ok(paths) = std::env::var("DEP_DLIB_INCLUDE") {
