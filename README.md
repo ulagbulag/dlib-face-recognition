@@ -20,12 +20,12 @@ The original working is [here (unmaintaned; since Aug 2021)](https://github.com/
 
 ### Supported Platforms
 
-* Linux (x64, arm)
+* Linux { aarch64, x86_64 }
     - Ubuntu 20.04
-* MacOS (arm)
-    - Apple Silicon
-        * Apple M1
-* Windows 10 (x64)
+* MacOS { x86_64 }
+    - Apple Silicon (`Apple M1`)
+* Windows { x86_64 }
+    - Windows 10
 
 For better maintaining, please let us know whether the other platforms support it.
 Besides, you may claim us whether the specific platform should support it through `Issues` .
@@ -36,7 +36,7 @@ Besides, you may claim us whether the specific platform should support it throug
 * blas
 * lapack
 
-For Windows, `vcpkg` may help building both `blas` and `lapack` .
+For Windows, [`vcpkg`](https://vcpkg.io/en/getting-started.html) may help building both `blas` and `lapack` .
 For other platforms such as Linux, package managers should support installing them.
 
 ### Building Native library
@@ -68,16 +68,12 @@ cargo build --features embed-all
 
 There is one included test to recognize, and draw a face's points:
 
-`cargo run --example draw` -> To run the example.
+* `cargo run --features embed-all --example draw` -> To run the example.
 
 There is two files to benchmark the code, and test some functions:
 
-`cargo test --test benchmarks` -> To run the benchmarks.
-`cargo test --test utilities_tests` -> To run the utilities tester.
-
-```bash
-cargo test --features embed-all --test benchmarks
-```
+* `cargo test --features embed-all --test benchmarks` -> To run the benchmarks.
+* `cargo test --features embed-all --test utilities_tests` -> To run the utilities tester.
 
 ## Examples
 
