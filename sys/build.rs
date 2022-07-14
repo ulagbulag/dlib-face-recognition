@@ -1,3 +1,9 @@
+extern crate core;
+
+use std::env;
+use std::path::PathBuf;
+use fs_extra::dir::CopyOptions;
+
 #[cfg(feature = "build")]
 fn download_and_unzip(version: &str) -> std::path::PathBuf {
     let url = format!("http://dlib.net/files/dlib-{}.zip", version);
@@ -55,58 +61,79 @@ fn main() {
 
     // Download
     let src = download_and_unzip(&version_dlib);
+    build_dlib(&src);
+}
 
-    // Build
-    let dst = cmake::Config::new(src.join("examples"))
-        .no_build_target(true)
-        .define("DLIB_JPEG_SUPPORT", "1")
-        .define("DLIB_PNG_SUPPORT", "1")
-        // .define("DLIB_USE_BLAS", "1")
-        // .define("DLIB_USE_LAPACK", "1")
-        .define("USE_AVX_INSTRUCTIONS", "1")
-        .define("USE_SSE2_INSTRUCTIONS", "1")
-        .define("USE_SSE4_INSTRUCTIONS", "1")
+fn build_dlib(src: &PathBuf) {
+    let dst = cmake::Config::new(&src)
+        .no_build_target(false)
+        .define("JPEG_INCLUDE_DIR", src.join("dlib").join("external").join("libjpeg"))
+        .define("JPEG_LIBRARY", src.join("dlib").join("external").join("libjpeg"))
+        .define("PNG_PNG_INCLUDE_DIR", src.join("dlib").join("external").join("libpng"))
+        .define("PNG_LIBRARY_RELEASE", src.join("dlib").join("external").join("libpng"))
+        .define("ZLIB_INCLUDE_DIR", src.join("dlib").join("external").join("zlib"))
+        .define("ZLIB_LIBRARY_RELEASE", src.join("dlib").join("external").join("zlib"))
+        .define("CMAKE_INSTALL_PREFIX", "install")
         .build();
 
     // Copy the library file
     let dst_lib = &dst;
-    let src_lib_dir = dst.join("build").join("dlib_build");
+    let src_lib_dir = dst.join("build").join("install");
     let src_lib_prefix = if cfg!(windows) { "" } else { "lib" };
     let src_lib_suffix = if cfg!(windows) { "lib" } else { "a" };
-    let src_lib = glob::glob(&format!(
-        "{}/**/{}dlib*.{}",
-        src_lib_dir.display(),
-        &src_lib_prefix,
-        &src_lib_suffix
-    ))
-    .expect("Failed to read glob pattern")
-    .into_iter()
-    .filter_map(Result::ok)
-    .next()
-    .expect("Failed to find library file");
-    std::fs::create_dir_all(&dst_lib).unwrap();
-    std::fs::copy(
-        &src_lib,
-        dst_lib.join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix)),
-    )
-    .unwrap();
+    std::fs::create_dir_all(dst.join("lib")).unwrap();
+    std::fs::create_dir_all(dst.join("include")).unwrap();
 
-    // Copy header files
-    let dst_include = dst.join("include");
-    std::fs::create_dir_all(&dst_include).unwrap();
+
     fs_extra::dir::copy(
-        src.join("dlib"),
-        &dst_include,
-        &fs_extra::dir::CopyOptions {
+        &src_lib_dir.join("lib"),
+        &dst,
+        &CopyOptions {
             skip_exist: true,
             ..Default::default()
         },
-    )
-    .unwrap();
+    ).unwrap();
 
-    // Link
-    println!("cargo:root={}", dst.display());
-    println!("cargo:include={}", dst_include.display());
+    fs_extra::dir::copy(
+        &src_lib_dir.join("include"),
+        &dst,
+        &CopyOptions {
+            skip_exist: true,
+            ..Default::default()
+        },
+    ).unwrap();
+
+    // modify file name only on windows msvc tool chain.
+    let src_lib_path = glob::glob(&format!(
+        "{}/**/{}dlib*.{}",
+        src_lib_dir.join("lib").display(),
+        &src_lib_prefix,
+        &src_lib_suffix
+    ))
+        .expect("Failed to read glob pattern")
+        .into_iter()
+        .filter_map(Result::ok)
+        .next();
+    match src_lib_path {
+        None => {
+            // silent ignore
+        }
+        Some(source) => {
+            std::fs::copy(
+                source,
+                src_lib_dir.join("lib").join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix)))
+                .unwrap();
+        }
+    }
+
+    let out_dir = env::var("OUT_DIR").unwrap();
+
+    std::env::var("CARGO_MANIFEST_DIR").unwrap();
+    let dlib = PathBuf::from(out_dir).join("lib");
+    println!("cargo:rustc-flags=-L '{}'", dlib.display());
+    println!("cargo:root={}", env::var("OUT_DIR").unwrap());
+    println!("cargo:include={}", dst_lib.join("include").display());
+    println!("cargo:rustc-link-lib=dlib");
 }
 
 #[cfg(not(feature = "build"))]
