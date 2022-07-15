@@ -37,44 +37,34 @@ fn main() {
     let version_minor = env!("CARGO_PKG_VERSION_MINOR");
     let version_dlib = format!("{}.{}", version_major, version_minor);
 
-    // Try probing
-    if let Ok(library) = pkg_config::Config::new()
-        .print_system_cflags(false)
-        // .atleast_version(&version_dlib)
-        .probe("dlib-1")
-    {
-        fn write_paths(key: &str, paths: Vec<std::path::PathBuf>) {
-            println!(
-                "cargo:{}={}",
-                key,
-                std::env::join_paths(paths)
-                    .unwrap()
-                    .as_os_str()
-                    .to_str()
-                    .unwrap()
-            );
-        }
-        write_paths("root", library.link_paths);
-        write_paths("include", library.include_paths);
-        return;
-    }
-
     // Download
     let src = download_and_unzip(&version_dlib);
     build_dlib(&src);
 }
 
 fn build_dlib(src: &PathBuf) {
-    let dst = cmake::Config::new(&src)
-        .no_build_target(false)
-        .define("JPEG_INCLUDE_DIR", src.join("dlib").join("external").join("libjpeg"))
-        .define("JPEG_LIBRARY", src.join("dlib").join("external").join("libjpeg"))
-        .define("PNG_PNG_INCLUDE_DIR", src.join("dlib").join("external").join("libpng"))
-        .define("PNG_LIBRARY_RELEASE", src.join("dlib").join("external").join("libpng"))
-        .define("ZLIB_INCLUDE_DIR", src.join("dlib").join("external").join("zlib"))
-        .define("ZLIB_LIBRARY_RELEASE", src.join("dlib").join("external").join("zlib"))
-        .define("CMAKE_INSTALL_PREFIX", "install")
-        .build();
+    let target = env::var("TARGET").unwrap();
+
+    let mut dst = None;
+    if target.contains("x86_64-unknown-linux-gnu") {
+        dst = Some(cmake::Config::new(&src)
+                           .no_build_target(false)
+                           .define("CMAKE_INSTALL_PREFIX", "install")
+                           .build());
+    } else {
+        dst = Some(cmake::Config::new(&src)
+                           .no_build_target(true)
+                           .define("JPEG_INCLUDE_DIR", src.join("dlib").join("external").join("libjpeg"))
+                           .define("JPEG_LIBRARY", src.join("dlib").join("external").join("libjpeg"))
+                           .define("PNG_PNG_INCLUDE_DIR", src.join("dlib").join("external").join("libpng"))
+                           .define("PNG_LIBRARY_RELEASE", src.join("dlib").join("external").join("libpng"))
+                           .define("ZLIB_INCLUDE_DIR", src.join("dlib").join("external").join("zlib"))
+                           .define("ZLIB_LIBRARY_RELEASE", src.join("dlib").join("external").join("zlib"))
+                           .define("CMAKE_INSTALL_PREFIX", "install")
+                           .build());
+
+    }
+    let dst = dst.unwrap();
 
     // Copy the library file
     let dst_lib = &dst;
@@ -129,11 +119,13 @@ fn build_dlib(src: &PathBuf) {
     let out_dir = env::var("OUT_DIR").unwrap();
 
     std::env::var("CARGO_MANIFEST_DIR").unwrap();
-    let dlib = PathBuf::from(out_dir).join("lib");
-    println!("cargo:rustc-flags=-L '{}'", dlib.display());
-    println!("cargo:root={}", env::var("OUT_DIR").unwrap());
+    let dlib = PathBuf::from(out_dir.clone()).join("lib");
+    println!("cargo:rustc-link-search=native={}", out_dir.clone());
+    println!("cargo:rustc-flags=-L {}", dlib.display());
+    println!("cargo:rustc-flags=-L {}", out_dir.clone());
+    println!("cargo:root={}", out_dir.clone());
     println!("cargo:include={}", dst_lib.join("include").display());
-    println!("cargo:rustc-link-lib=dlib");
+    println!("cargo:rustc-link-lib=static=dlib");
 }
 
 #[cfg(not(feature = "build"))]
