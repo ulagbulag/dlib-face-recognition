@@ -46,14 +46,14 @@ fn build_dlib(src: &PathBuf) {
     let target = env::var("TARGET").unwrap();
 
     let mut dst = None;
-    if target.contains("x86_64-unknown-linux-gnu") {
+    if target.contains("x86_64-unknown-linux-gnu") || target.contains("x86_64-pc-windows-msvc") {
         dst = Some(cmake::Config::new(&src)
                            .no_build_target(false)
                            .define("CMAKE_INSTALL_PREFIX", "install")
                            .build());
     } else {
         dst = Some(cmake::Config::new(&src)
-                           .no_build_target(true)
+                           .no_build_target(false)
                            .define("JPEG_INCLUDE_DIR", src.join("dlib").join("external").join("libjpeg"))
                            .define("JPEG_LIBRARY", src.join("dlib").join("external").join("libjpeg"))
                            .define("PNG_PNG_INCLUDE_DIR", src.join("dlib").join("external").join("libpng"))
@@ -95,7 +95,7 @@ fn build_dlib(src: &PathBuf) {
 
     // modify file name only on windows msvc tool chain.
     let src_lib_path = glob::glob(&format!(
-        "{}/**/{}dlib*.{}",
+        "{}/{}dlib*.{}",
         src_lib_dir.join("lib").display(),
         &src_lib_prefix,
         &src_lib_suffix
@@ -104,16 +104,13 @@ fn build_dlib(src: &PathBuf) {
         .into_iter()
         .filter_map(Result::ok)
         .next();
-    match src_lib_path {
-        None => {
-            // silent ignore
-        }
-        Some(source) => {
-            std::fs::copy(
-                source,
-                src_lib_dir.join("lib").join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix)))
-                .unwrap();
-        }
+    eprintln!("dlib match: {:?}", src_lib_path);
+    if src_lib_path.is_some() {
+        let source = src_lib_path.unwrap();
+        std::fs::copy(
+            source,
+            src_lib_dir.join("lib").join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix)))
+            .unwrap();
     }
 
     let out_dir = env::var("OUT_DIR").unwrap();
