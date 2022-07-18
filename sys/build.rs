@@ -70,8 +70,6 @@ fn build_dlib(src: &PathBuf) {
     // Copy the library file
     let dst_lib = &dst;
     let src_lib_dir = dst.join("build").join("install");
-    let src_lib_prefix = if cfg!(windows) { "" } else { "lib" };
-    let src_lib_suffix = if cfg!(windows) { "lib" } else { "a" };
     std::fs::create_dir_all(dst.join("lib")).unwrap();
     std::fs::create_dir_all(dst.join("include")).unwrap();
 
@@ -95,25 +93,7 @@ fn build_dlib(src: &PathBuf) {
     ).unwrap();
 
     // modify file name only on windows msvc tool chain.
-    let src_lib_path = glob::glob(&format!(
-        "{}/{}dlib*.{}",
-        dst.join("lib").display(),
-        &src_lib_prefix,
-        &src_lib_suffix
-    ))
-        .expect("Failed to read glob pattern")
-        .into_iter()
-        .filter_map(Result::ok)
-        .next();
-    if src_lib_path.is_some() {
-        let source = src_lib_path.unwrap();
-        let dlib_modified_name = dst.join("lib").join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix));
-        File::create(dlib_modified_name.clone()).unwrap();
-        std::fs::copy(
-            source,
-            dlib_modified_name
-        ).unwrap();
-    }
+    modify_dlib_msvc_filename(&dst);
 
     let out_dir = env::var("OUT_DIR").unwrap();
 
@@ -125,6 +105,33 @@ fn build_dlib(src: &PathBuf) {
     println!("cargo:root={}", out_dir.clone());
     println!("cargo:include={}", dst_lib.join("include").display());
     println!("cargo:rustc-link-lib=static=dlib");
+}
+
+fn modify_dlib_msvc_filename(dst: &PathBuf) {
+    let src_lib_prefix = if cfg!(windows) { "" } else { "lib" };
+    let src_lib_suffix = if cfg!(windows) { "lib" } else { "a" };
+    let target = env::var("TARGET").unwrap();
+    if target.contains("x86_64-pc-windows-msvc") {
+        let src_lib_path = glob::glob(&format!(
+            "{}/{}dlib*.{}",
+            dst.join("lib").display(),
+            &src_lib_prefix,
+            &src_lib_suffix
+        ))
+            .expect("Failed to read glob pattern")
+            .into_iter()
+            .filter_map(Result::ok)
+            .next();
+        if src_lib_path.is_some() {
+            let source = src_lib_path.unwrap();
+            let dlib_modified_name = dst.join("lib").join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix));
+            File::create(dlib_modified_name.clone()).unwrap();
+            std::fs::copy(
+                source,
+                dlib_modified_name
+            ).unwrap();
+        }
+    };
 }
 
 #[cfg(not(feature = "build"))]
