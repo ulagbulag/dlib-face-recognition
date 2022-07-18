@@ -1,6 +1,7 @@
 extern crate core;
 
 use std::env;
+use std::fs::File;
 use std::path::PathBuf;
 use fs_extra::dir::CopyOptions;
 
@@ -44,7 +45,6 @@ fn main() {
 
 fn build_dlib(src: &PathBuf) {
     let target = env::var("TARGET").unwrap();
-
     let mut dst = None;
     if target.contains("x86_64-unknown-linux-gnu") || target.contains("x86_64-pc-windows-msvc") {
         dst = Some(cmake::Config::new(&src)
@@ -76,7 +76,7 @@ fn build_dlib(src: &PathBuf) {
 
 
     fs_extra::dir::copy(
-        &src_lib_dir.join("lib"),
+        src_lib_dir.join("lib"),
         &dst,
         &CopyOptions {
             skip_exist: true,
@@ -85,7 +85,7 @@ fn build_dlib(src: &PathBuf) {
     ).unwrap();
 
     fs_extra::dir::copy(
-        &src_lib_dir.join("include"),
+        src_lib_dir.join("include"),
         &dst,
         &CopyOptions {
             skip_exist: true,
@@ -96,7 +96,7 @@ fn build_dlib(src: &PathBuf) {
     // modify file name only on windows msvc tool chain.
     let src_lib_path = glob::glob(&format!(
         "{}/{}dlib*.{}",
-        src_lib_dir.join("lib").display(),
+        dst.join("lib").display(),
         &src_lib_prefix,
         &src_lib_suffix
     ))
@@ -104,13 +104,14 @@ fn build_dlib(src: &PathBuf) {
         .into_iter()
         .filter_map(Result::ok)
         .next();
-    eprintln!("dlib match: {:?}", src_lib_path);
     if src_lib_path.is_some() {
         let source = src_lib_path.unwrap();
+        let dlib_modified_name = dst.join("lib").join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix));
+        File::create(dlib_modified_name.clone()).unwrap();
         std::fs::copy(
             source,
-            src_lib_dir.join("lib").join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix)))
-            .unwrap();
+            dlib_modified_name
+        ).unwrap();
     }
 
     let out_dir = env::var("OUT_DIR").unwrap();
