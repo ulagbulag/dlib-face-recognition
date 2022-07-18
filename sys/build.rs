@@ -45,6 +45,7 @@ fn main() {
 
 fn build_dlib(src: &PathBuf) {
     let target = env::var("TARGET").unwrap();
+    println!("cargo:warning=TARGET_BUILD: {}", target);
     let mut dst = None;
     if target.contains("x86_64-unknown-linux-gnu") || target.contains("x86_64-pc-windows-msvc") {
         dst = Some(cmake::Config::new(&src)
