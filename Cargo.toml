@@ -1,6 +1,6 @@
 [package]
 name = "dlib-face-recognition"
-version = "0.2.2"
+version = "0.2.3"
 authors = [
     "Ashley <expenses@airmail.cc>",
     "Ho Kim <great.ho.kim@gmail.com>",
