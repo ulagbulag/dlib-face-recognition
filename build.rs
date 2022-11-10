@@ -1,3 +1,6 @@
+use std::env;
+use std::path::PathBuf;
+
 #[cfg(feature = "embed-any")]
 fn download_path() -> std::path::PathBuf {
     std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("files")
@@ -33,13 +36,28 @@ fn download_and_unzip(client: &reqwest::blocking::Client, url: &str) {
 
 #[cfg(feature = "build")]
 fn main() {
+    let out_dir = env::var("OUT_DIR").unwrap();
+    let target = env::var("TARGET").unwrap();
+    println!("cargo:warning= target {}", target);
+    let mut config = cpp_build::Config::new();
     println!("cargo:rerun-if-changed=./files");
 
-    println!("cargo:rustc-link-lib=dlib");
-    println!("cargo:rustc-link-lib=blas");
-    println!("cargo:rustc-link-lib=lapack");
+    let root_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+    let widows = PathBuf::from(root_dir.clone()).join("external-libs").join("windows");
 
-    let mut config = cpp_build::Config::new();
+    // only for windows mingw64/gnu tool chain
+    if target.contains("windows-gnu") {
+        config.flag("-Os");
+        config.flag("-Wa,-mbig-obj");
+        println!("cargo:rustc-flags=-L {}", widows.display());
+    } else if target.contains("msvc") {
+        println!("cargo:rustc-flags=-L {}", widows.display());
+    }
+
+    println!("cargo:rustc-link-lib={}", "blas");
+    println!("cargo:rustc-link-lib={}", "lapack");
+    println!("cargo:rustc-link-lib=static=dlib");
+
     if let Ok(paths) = std::env::var("DEP_DLIB_INCLUDE") {
         for path in std::env::split_paths(&paths) {
             config.include(path);
