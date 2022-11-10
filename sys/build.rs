@@ -2,7 +2,8 @@ extern crate core;
 
 use std::env;
 use std::fs::File;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+
 use fs_extra::dir::CopyOptions;
 
 #[cfg(feature = "build")]
@@ -45,34 +46,101 @@ fn main() {
 
 fn build_dlib(src: &PathBuf) {
     let target = env::var("TARGET").unwrap();
-    println!("cargo:warning=TARGET_BUILD: {}", target);
-    let mut dst = None;
-    if target.contains("x86_64-unknown-linux-gnu") || target.contains("x86_64-pc-windows-msvc") {
-        dst = Some(cmake::Config::new(&src)
-                           .no_build_target(false)
-                           .define("CMAKE_INSTALL_PREFIX", "install")
-                           .build());
-    } else {
-        dst = Some(cmake::Config::new(&src)
-                           .no_build_target(false)
-                           .define("JPEG_INCLUDE_DIR", src.join("dlib").join("external").join("libjpeg"))
-                           .define("JPEG_LIBRARY", src.join("dlib").join("external").join("libjpeg"))
-                           .define("PNG_PNG_INCLUDE_DIR", src.join("dlib").join("external").join("libpng"))
-                           .define("PNG_LIBRARY_RELEASE", src.join("dlib").join("external").join("libpng"))
-                           .define("ZLIB_INCLUDE_DIR", src.join("dlib").join("external").join("zlib"))
-                           .define("ZLIB_LIBRARY_RELEASE", src.join("dlib").join("external").join("zlib"))
-                           .define("CMAKE_INSTALL_PREFIX", "install")
-                           .build());
 
+    if target.contains("x86_64-pc-windows-msvc") {
+        build_dlib_on_windows(src)
+    } else {
+        build_dlib_on_unixlike(src)
     }
-    let dst = dst.unwrap();
+}
+
+fn build_dlib_on_unixlike(src: &Path) {
+    // Try probing
+    if let Ok(library) = pkg_config::Config::new()
+        .print_system_cflags(false)
+        // .atleast_version(&version_dlib)
+        .probe("dlib-1")
+    {
+        fn write_paths(key: &str, paths: Vec<std::path::PathBuf>) {
+            println!(
+                "cargo:{}={}",
+                key,
+                std::env::join_paths(paths)
+                    .unwrap()
+                    .as_os_str()
+                    .to_str()
+                    .unwrap()
+            );
+        }
+        write_paths("root", library.link_paths);
+        write_paths("include", library.include_paths);
+        return;
+    }
+
+    // Build
+    let dst = cmake::Config::new(src.join("examples"))
+        .no_build_target(true)
+        .define("DLIB_JPEG_SUPPORT", "1")
+        .define("DLIB_PNG_SUPPORT", "1")
+        // .define("DLIB_USE_BLAS", "1")
+        // .define("DLIB_USE_LAPACK", "1")
+        .define("USE_AVX_INSTRUCTIONS", "1")
+        .define("USE_SSE2_INSTRUCTIONS", "1")
+        .define("USE_SSE4_INSTRUCTIONS", "1")
+        .build();
+
+    // Copy the library file
+    let dst_lib = &dst;
+    let src_lib_dir = dst.join("build").join("dlib_build");
+    let src_lib_prefix = if cfg!(windows) { "" } else { "lib" };
+    let src_lib_suffix = if cfg!(windows) { "lib" } else { "a" };
+    let src_lib = glob::glob(&format!(
+        "{}/**/{}dlib*.{}",
+        src_lib_dir.display(),
+        &src_lib_prefix,
+        &src_lib_suffix
+    ))
+    .expect("Failed to read glob pattern")
+    .into_iter()
+    .filter_map(Result::ok)
+    .next()
+    .expect("Failed to find library file");
+    std::fs::create_dir_all(dst_lib).unwrap();
+    std::fs::copy(
+        &src_lib,
+        dst_lib.join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix)),
+    )
+    .unwrap();
+
+    // Copy header files
+    let dst_include = dst.join("include");
+    std::fs::create_dir_all(&dst_include).unwrap();
+    fs_extra::dir::copy(
+        src.join("dlib"),
+        &dst_include,
+        &fs_extra::dir::CopyOptions {
+            skip_exist: true,
+            ..Default::default()
+        },
+    )
+    .unwrap();
+
+    // Link
+    println!("cargo:root={}", dst.display());
+    println!("cargo:include={}", dst_include.display());
+}
+
+fn build_dlib_on_windows(src: &PathBuf) {
+    let dst = cmake::Config::new(src)
+        .no_build_target(false)
+        .define("CMAKE_INSTALL_PREFIX", "install")
+        .build();
 
     // Copy the library file
     let dst_lib = &dst;
     let src_lib_dir = dst.join("build").join("install");
     std::fs::create_dir_all(dst.join("lib")).unwrap();
     std::fs::create_dir_all(dst.join("include")).unwrap();
-
 
     fs_extra::dir::copy(
         src_lib_dir.join("lib"),
@@ -81,7 +149,8 @@ fn build_dlib(src: &PathBuf) {
             skip_exist: true,
             ..Default::default()
         },
-    ).unwrap();
+    )
+    .unwrap();
 
     fs_extra::dir::copy(
         src_lib_dir.join("include"),
@@ -90,7 +159,8 @@ fn build_dlib(src: &PathBuf) {
             skip_exist: true,
             ..Default::default()
         },
-    ).unwrap();
+    )
+    .unwrap();
 
     // modify file name only on windows msvc tool chain.
     modify_dlib_msvc_filename(&dst);
@@ -99,15 +169,15 @@ fn build_dlib(src: &PathBuf) {
 
     std::env::var("CARGO_MANIFEST_DIR").unwrap();
     let dlib = PathBuf::from(out_dir.clone()).join("lib");
-    println!("cargo:rustc-link-search=native={}", out_dir.clone());
+    println!("cargo:rustc-link-search=native={}", out_dir);
     println!("cargo:rustc-flags=-L {}", dlib.display());
-    println!("cargo:rustc-flags=-L {}", out_dir.clone());
-    println!("cargo:root={}", out_dir.clone());
+    println!("cargo:rustc-flags=-L {}", out_dir);
+    println!("cargo:root={}", out_dir);
     println!("cargo:include={}", dst_lib.join("include").display());
     println!("cargo:rustc-link-lib=static=dlib");
 }
 
-fn modify_dlib_msvc_filename(dst: &PathBuf) {
+fn modify_dlib_msvc_filename(dst: &Path) {
     let src_lib_prefix = if cfg!(windows) { "" } else { "lib" };
     let src_lib_suffix = if cfg!(windows) { "lib" } else { "a" };
     let target = env::var("TARGET").unwrap();
@@ -118,18 +188,16 @@ fn modify_dlib_msvc_filename(dst: &PathBuf) {
             &src_lib_prefix,
             &src_lib_suffix
         ))
-            .expect("Failed to read glob pattern")
-            .into_iter()
-            .filter_map(Result::ok)
-            .next();
-        if src_lib_path.is_some() {
-            let source = src_lib_path.unwrap();
-            let dlib_modified_name = dst.join("lib").join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix));
+        .expect("Failed to read glob pattern")
+        .into_iter()
+        .filter_map(Result::ok)
+        .next();
+        if let Some(source) = src_lib_path {
+            let dlib_modified_name = dst
+                .join("lib")
+                .join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix));
             File::create(dlib_modified_name.clone()).unwrap();
-            std::fs::copy(
-                source,
-                dlib_modified_name
-            ).unwrap();
+            std::fs::copy(source, dlib_modified_name).unwrap();
         }
     };
 }
