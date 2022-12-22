@@ -102,8 +102,7 @@ fn build_dlib_on_unixlike(src: &Path) {
     ))
     .expect("Failed to read glob pattern")
     .into_iter()
-    .filter_map(Result::ok)
-    .next()
+    .find_map(Result::ok)
     .expect("Failed to find library file");
     std::fs::create_dir_all(dst_lib).unwrap();
     std::fs::copy(
@@ -125,9 +124,12 @@ fn build_dlib_on_unixlike(src: &Path) {
     )
     .unwrap();
 
+    let out_dir = env::var("OUT_DIR").unwrap();
+
     // Link
-    println!("cargo:root={}", dst.display());
+    println!("cargo:rustc-flags=-L {}", out_dir);
     println!("cargo:include={}", dst_include.display());
+    println!("cargo:rustc-link-lib=static=dlib");
 }
 
 fn build_dlib_on_windows(src: &PathBuf) {
