@@ -34,7 +34,7 @@ embed-lp = ["embed-any"]
 [dependencies]
 cpp = "0.5"
 dlib-face-recognition-sys = { path = "sys", version = "19.22.0-rc.1", default-features = false }
-image = "0.23"
+image = "0.24.5"
 
 [build-dependencies]
 cpp_build = "0.5"
