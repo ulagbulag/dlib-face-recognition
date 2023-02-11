@@ -30,11 +30,13 @@ impl FaceEncoding {
 
     /// Create a new encoding using previously stored values
     /// from a f64 Vec.
-    pub fn from_vec(values: Vec<f64>) -> Result<Self, ArraySizeError> {
+    pub fn from_vec(values: &Vec<f64>) -> Result<Self, ArraySizeError> {
         match values.len() {
             128 => {
+                let values = values.as_ptr();
                 let inner = unsafe {
-                    cpp!([values as "std::vector<double>"] -> FaceEncodingInner as "dlib::matrix<double,0,1>" {
+                    cpp!([values as "const double *"] -> FaceEncodingInner as "dlib::matrix<double,0,1>" {
+
                         auto inner = dlib::matrix<double,0,1>(128);
                         for (int i = 0; i < 128; i++) {
                             inner(i) = values[i];
@@ -103,7 +105,7 @@ impl TryFrom<Vec<f64>> for FaceEncoding {
     type Error = ArraySizeError;
 
     fn try_from(value: Vec<f64>) -> Result<Self, Self::Error> {
-        Self::from_vec(value)
+        Self::from_vec(&value)
     }
 }
 
