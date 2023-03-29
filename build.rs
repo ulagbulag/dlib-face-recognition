@@ -34,7 +34,7 @@ fn download_and_unzip(client: &reqwest::blocking::Client, url: &str) {
     std::io::copy(&mut decoded, &mut file).unwrap();
 }
 
-#[cfg(feature = "build")]
+#[cfg(feature = "build-native")]
 fn main() {
     let mut config = cpp_build::Config::new();
     println!("cargo:rerun-if-changed=./files");
@@ -102,5 +102,5 @@ fn main() {
     }
 }
 
-#[cfg(not(feature = "build"))]
+#[cfg(not(feature = "build-native"))]
 fn main() {}
