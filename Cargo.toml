@@ -21,7 +21,6 @@ include = ["src/**/*.rs", "build.rs", "Cargo.toml", "LICENSE"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["build-native"]
 build-native = ["dlib-face-recognition-sys"]
 
 embed-all = ["embed-fd-nn", "embed-fe-nn", "embed-lp"]
