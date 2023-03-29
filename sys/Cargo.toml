@@ -1,6 +1,6 @@
 [package]
 name = "dlib-face-recognition-sys"
-version = "19.22.0-rc.1"
+version = "19.24.0-rc.1"
 authors = ["Ho Kim <great.ho.kim@gmail.com>"]
 edition = "2021"
 

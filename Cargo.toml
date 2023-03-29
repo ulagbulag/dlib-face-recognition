@@ -1,6 +1,6 @@
 [package]
 name = "dlib-face-recognition"
-version = "0.2.3"
+version = "0.3.0"
 authors = [
     "Ashley <expenses@airmail.cc>",
     "Ho Kim <great.ho.kim@gmail.com>",
@@ -32,7 +32,7 @@ embed-lp = ["embed-any"]
 
 [dependencies]
 cpp = "0.5"
-dlib-face-recognition-sys = { path = "sys", version = "19.22.0-rc.1", default-features = false, optional = true }
+dlib-face-recognition-sys = { path = "sys", version = "19.24.0-rc.1", default-features = false, optional = true }
 image = "0.24.5"
 bzip2 = { version = "0.4", optional = true }
 reqwest = { version = "0.11", optional = true, features = ["blocking"] }
