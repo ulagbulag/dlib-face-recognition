@@ -38,30 +38,29 @@ fn main() {
     let mut config = cpp_build::Config::new();
     println!("cargo:rerun-if-changed=./files");
 
-    // only for windows
-    let target = env::var("TARGET").unwrap();
-    if target.contains("windows") {
+    #[cfg(target_family="windows")] {
         let root_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-        let widows = PathBuf::from(root_dir)
+        let windows = PathBuf::from(root_dir)
             .join("external-libs")
             .join("windows");
 
-        // only for windows mingw64/gnu toolchain
-        if target.contains("gnu") {
+        #[cfg(target_env="gnu")] {
             config.flag("-Os");
             config.flag("-Wa,-mbig-obj");
         }
 
-        println!("cargo:rustc-flags=-L {}", widows.display());
+        println!("cargo:rustc-flags=-L {}", windows.display());
 
         println!("cargo:rustc-link-lib=blas");
         println!("cargo:rustc-link-lib=lapack");
         println!("cargo:rustc-link-lib=static=dlib");
-    } else {
+    } 
+
+    #[cfg(not(target_family="windows"))] {
         println!("cargo:rustc-link-lib=dlib");
         println!("cargo:rustc-link-lib=blas");
         println!("cargo:rustc-link-lib=lapack");
-    }
+    } 
 
     if let Ok(paths) = std::env::var("DEP_DLIB_INCLUDE") {
         for path in std::env::split_paths(&paths) {
