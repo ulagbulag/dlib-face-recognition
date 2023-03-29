@@ -34,11 +34,11 @@ embed-lp = ["embed-any"]
 cpp = "0.5"
 dlib-face-recognition-sys = { path = "sys", version = "19.22.0-rc.1", default-features = false, optional = true }
 image = "0.24.5"
+bzip2 = { version = "0.4", optional = true }
+reqwest = { version = "0.11", optional = true, features = ["blocking"] }
 
 [build-dependencies]
 cpp_build = "0.5"
-bzip2 = { version = "0.4", optional = true }
-reqwest = { version = "0.11", optional = true, features = ["blocking"] }
 
 [dev-dependencies]
 lazy_static = "1.4"

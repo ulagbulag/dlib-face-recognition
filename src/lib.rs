@@ -22,7 +22,7 @@ extern crate cpp;
 mod wrapper;
 
 mod base;
-mod embed;
+#[cfg(feature = "embed-any")] mod embed;
 mod face_detection;
 mod face_encoding;
 mod geometry;
