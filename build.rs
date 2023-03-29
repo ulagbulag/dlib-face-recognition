@@ -1,13 +1,10 @@
-use std::env;
-use std::path::PathBuf;
-
 fn main() {
     let mut config = cpp_build::Config::new();
     println!("cargo:rerun-if-changed=./files");
 
     #[cfg(target_family="windows")] {
         let root_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-        let windows = PathBuf::from(root_dir)
+        let windows = std::path::PathBuf::from(root_dir)
             .join("external-libs")
             .join("windows");
 
