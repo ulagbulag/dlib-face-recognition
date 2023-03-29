@@ -24,7 +24,7 @@ include = ["src/**/*.rs", "build.rs", "Cargo.toml", "LICENSE"]
 build-native = ["dlib-face-recognition-sys"]
 
 embed-all = ["embed-fd-nn", "embed-fe-nn", "embed-lp"]
-embed-any = ["build-native", "reqwest", "bzip2"]
+embed-any = ["reqwest", "bzip2"]
 
 embed-fd-nn = ["embed-any"]
 embed-fe-nn = ["embed-any"]
