@@ -6,7 +6,6 @@ use std::path::{Path, PathBuf};
 
 use fs_extra::dir::CopyOptions;
 
-#[cfg(feature = "build")]
 fn download_and_unzip(version: &str) -> std::path::PathBuf {
     let url = format!("http://dlib.net/files/dlib-{}.zip", version);
     let url: reqwest::Url = url.parse().unwrap();
@@ -32,7 +31,6 @@ fn download_and_unzip(version: &str) -> std::path::PathBuf {
     path
 }
 
-#[cfg(feature = "build")]
 fn main() {
     // Configure
     let version_major = env!("CARGO_PKG_VERSION_MAJOR");
@@ -203,6 +201,3 @@ fn modify_dlib_msvc_filename(dst: &Path) {
         }
     };
 }
-
-#[cfg(not(feature = "build"))]
-fn main() {}
