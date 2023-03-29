@@ -25,11 +25,11 @@ impl FaceEncoderNetwork {
 
         check_file_or_download(&filename);
 
-        Self::new(default_filepath)
+        Self::open(default_filepath)
     }
 
     /// Deserialize the face encoding network from a file path.
-    pub fn new<P: AsRef<Path>>(filename: P) -> Result<Self, String> {
+    pub fn open<P: AsRef<Path>>(filename: P) -> Result<Self, String> {
         let string = path_as_cstring(filename.as_ref())?;
 
         let inner = FaceEncoderNetworkInner::default();
