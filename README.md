@@ -1,5 +1,7 @@
 # dlib-face-recognition
 
+[![Current Crates.io Version](https://img.shields.io/crates/v/rocket.svg)](https://crates.io/crates/rocket)
+
 Inspired by [a similar python library](https://github.com/ageitgey/face_recognition), 
 `dlib-face-recognition` is a Rust library that binds to certain specific features of the [dlib C++ library](https://github.com/davisking/dlib).
 
@@ -14,7 +16,7 @@ These include:
 
 ## Original Working
 
-The original working is [here (unmaintaned; since Aug 2021)](https://github.com/expenses/face_recognition).
+The original work is [here (unmaintaned; since Aug 2021)](https://github.com/expenses/face_recognition).
 
 ## Building
 
@@ -27,7 +29,7 @@ The original working is [here (unmaintaned; since Aug 2021)](https://github.com/
 * Windows { x86_64 }
     - Windows 10
 
-For better maintaining, please let us know whether the other platforms support it.
+For better maintenance, please let us know whether the other platforms support it.
 Besides, you may claim us whether the specific platform should support it through `Issues` .
 
 ### Dependencies
@@ -41,28 +43,35 @@ For other platforms such as Linux, package managers should support installing th
 
 ### Building Native library
 
-`dlib-face-recognition` requires dlib to be installed.
+`dlib-face-recognition` requires dlib to be installed. You can either provide a existing system-wide installation, or build it with this library.
 
-The C++ library `dlib` will be automatically installed via `dlib-face-recognition-sys` .
+* To build it in compile-time:
+  - ```sh
+    cargo build --features build-native
+    ```
+* To use a system-wide dependency:
+  - ```sh
+    cargo build
+    ```
 
-For building, this library uses `cmake` , so please make sure for getting [ `cmake` ](https://cmake.org/install/) .
+The C++ library `dlib` will be installed via `dlib-face-recognition-sys` when the `build-native`feature flag is enabled.
+
+For the build, this library uses `cmake` , so please make sure to have [ `cmake` ](https://cmake.org/install/) .
+
+The `build-native` flag is disabled by default, offering increased build times.
 
 ### Building Rust package
 
 `dlib-face-recognition` includes a `embed-all` feature flag that can be used with `cargo build --features embed-all` .
 
-This will automatically download the face predictor, cnn face detector and face encoding neural network models (the fhog face detector is included in dlib and does not need to be downloaded). Alternatively, these models can be downloaded manually:
+`embed-all` will enable the `Default::default` implementations the matching structs. These will search for the /files folder, and if a file doesn't exist it will be downloaded at runtime.
 
 * CNN Face Detector: http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2  
 * Landmark Predictor: http://dlib.net/files/mmod_human_face_detector.dat.bz2
 * Face Recognition Net: http://dlib.net/files/dlib_face_recognition_resnet_model_v1.dat.bz2
 
-If this feature flag is enabled, the matching structs will have `Default::default` implementations provided that allows you to load them without having to worry about file locations.
-
-```bash
-# Install cmake on a CUDA-enabled machine ...
-cargo build --features embed-all
-```
+It is recommended to acquire the files before compile/runtime and set them in a protected location.
+The `embed-all` flag is disabled by default, offering increased build times.
 
 ## Testing
 
@@ -77,7 +86,4 @@ There is two files to benchmark the code, and test some functions:
 
 ## Examples
 
-```bash
-mkdir outputs
-cargo run --features embed-all --example draw assets/obama_1.jpg outputs/obama_1.jpg
-```
+For more information on examples: https://github.com/ulagbulag/dlib-face-recognition/tree/master/examples/README.md
