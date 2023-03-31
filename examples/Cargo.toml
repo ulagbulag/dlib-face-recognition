@@ -1,0 +1,5 @@
+[workspace]
+members = []
+
+[workspace.dependencies]
+dlib-face-recognition = { path = "../" }
