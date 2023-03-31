@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "draw"
+    "draw",
+    "compare_faces"
 ]
 
 [workspace.dependencies]
