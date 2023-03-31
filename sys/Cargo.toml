@@ -15,6 +15,9 @@ links = "dlib"
 
 include = ["src/**/*.rs", "build.rs", "Cargo.toml", "LICENSE"]
 
+[profile.release]
+lto = true
+
 [lib]
 doctest = false
 
