@@ -1,6 +1,6 @@
 # dlib-face-recognition
 
-[![Current Crates.io Version](https://img.shields.io/crates/v/rocket.svg)](https://crates.io/crates/rocket)
+[![Current Crates.io Version](https://img.shields.io/crates/v/dlib-face-recognition.svg)](https://crates.io/crates/dlib-face-recognition)
 
 Inspired by [a similar python library](https://github.com/ageitgey/face_recognition), 
 `dlib-face-recognition` is a Rust library that binds to certain specific features of the [dlib C++ library](https://github.com/davisking/dlib).
