@@ -1,6 +1,6 @@
 [package]
 name = "dlib-face-recognition"
-version = "0.2.3"
+version = "0.3.0"
 authors = [
     "Ashley <expenses@airmail.cc>",
     "Ho Kim <great.ho.kim@gmail.com>",
@@ -21,11 +21,10 @@ include = ["src/**/*.rs", "build.rs", "Cargo.toml", "LICENSE"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["build"]
-build = ["dlib-face-recognition-sys/build"]
+build-native = ["dlib-face-recognition-sys"]
 
 embed-all = ["embed-fd-nn", "embed-fe-nn", "embed-lp"]
-embed-any = ["build", "reqwest", "bzip2"]
+embed-any = ["reqwest", "bzip2"]
 
 embed-fd-nn = ["embed-any"]
 embed-fe-nn = ["embed-any"]
@@ -33,13 +32,13 @@ embed-lp = ["embed-any"]
 
 [dependencies]
 cpp = "0.5"
-dlib-face-recognition-sys = { path = "sys", version = "19.22.0-rc.1", default-features = false }
-image = "0.24.5"
+dlib-face-recognition-sys = { path = "sys", version = "19.24.0-rc.1", default-features = false, optional = true }
+image = { version = "0.24.6", default-features = false }
+bzip2 = { version = "0.4", optional = true }
+reqwest = { version = "0.11", optional = true, features = ["blocking"] }
 
 [build-dependencies]
 cpp_build = "0.5"
-bzip2 = { version = "0.4", optional = true }
-reqwest = { version = "0.11", optional = true, features = ["blocking"] }
 
 [dev-dependencies]
 lazy_static = "1.4"

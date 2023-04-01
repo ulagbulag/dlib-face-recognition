@@ -1,12 +1,8 @@
 extern crate core;
 
 use std::env;
-use std::fs::File;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
-use fs_extra::dir::CopyOptions;
-
-#[cfg(feature = "build")]
 fn download_and_unzip(version: &str) -> std::path::PathBuf {
     let url = format!("http://dlib.net/files/dlib-{}.zip", version);
     let url: reqwest::Url = url.parse().unwrap();
@@ -32,7 +28,6 @@ fn download_and_unzip(version: &str) -> std::path::PathBuf {
     path
 }
 
-#[cfg(feature = "build")]
 fn main() {
     // Configure
     let version_major = env!("CARGO_PKG_VERSION_MAJOR");
@@ -41,20 +36,12 @@ fn main() {
 
     // Download
     let src = download_and_unzip(&version_dlib);
-    build_dlib(&src);
+
+    build(&src);
 }
 
-fn build_dlib(src: &PathBuf) {
-    let target = env::var("TARGET").unwrap();
-
-    if target.contains("x86_64-pc-windows-msvc") {
-        build_dlib_on_windows(src)
-    } else {
-        build_dlib_on_unixlike(src)
-    }
-}
-
-fn build_dlib_on_unixlike(src: &Path) {
+#[cfg(target_family = "unix")]
+fn build(src: &Path) {
     // Try probing
     if let Ok(library) = pkg_config::Config::new()
         .print_system_cflags(false)
@@ -94,6 +81,7 @@ fn build_dlib_on_unixlike(src: &Path) {
     let src_lib_dir = dst.join("build").join("dlib_build");
     let src_lib_prefix = if cfg!(windows) { "" } else { "lib" };
     let src_lib_suffix = if cfg!(windows) { "lib" } else { "a" };
+
     let src_lib = glob::glob(&format!(
         "{}/**/{}dlib*.{}",
         src_lib_dir.display(),
@@ -104,9 +92,10 @@ fn build_dlib_on_unixlike(src: &Path) {
     .into_iter()
     .find_map(Result::ok)
     .expect("Failed to find library file");
+
     std::fs::create_dir_all(dst_lib).unwrap();
     std::fs::copy(
-        &src_lib,
+        src_lib,
         dst_lib.join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix)),
     )
     .unwrap();
@@ -132,7 +121,12 @@ fn build_dlib_on_unixlike(src: &Path) {
     println!("cargo:rustc-link-lib=static=dlib");
 }
 
-fn build_dlib_on_windows(src: &PathBuf) {
+#[cfg(target_family = "windows")]
+fn build(src: &PathBuf) {
+    use fs_extra::dir::CopyOptions;
+    use std::fs::File;
+    use std::path::PathBuf;
+
     let dst = cmake::Config::new(src)
         .no_build_target(false)
         .define("CMAKE_INSTALL_PREFIX", "install")
@@ -179,6 +173,7 @@ fn build_dlib_on_windows(src: &PathBuf) {
     println!("cargo:rustc-link-lib=static=dlib");
 }
 
+#[cfg(target_family = "windows")]
 fn modify_dlib_msvc_filename(dst: &Path) {
     let src_lib_prefix = if cfg!(windows) { "" } else { "lib" };
     let src_lib_suffix = if cfg!(windows) { "lib" } else { "a" };
@@ -203,6 +198,3 @@ fn modify_dlib_msvc_filename(dst: &Path) {
         }
     };
 }
-
-#[cfg(not(feature = "build"))]
-fn main() {}

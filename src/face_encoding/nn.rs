@@ -15,8 +15,21 @@ pub struct FaceEncoderNetwork {
 cpp_class!(unsafe struct FaceEncoderNetworkInner as "face_encoding_nn");
 
 impl FaceEncoderNetwork {
+    #[cfg(feature = "embed-fe-nn")]
+    pub fn default() -> Result<Self, String> {
+        use crate::embed::{check_file_or_download, ModelFile};
+
+        let filename = ModelFile::FaceEncoderNetwork;
+
+        let default_filepath = crate::embed::path_for_file(&filename);
+
+        check_file_or_download(&filename);
+
+        Self::open(default_filepath)
+    }
+
     /// Deserialize the face encoding network from a file path.
-    pub fn new<P: AsRef<Path>>(filename: P) -> Result<Self, String> {
+    pub fn open<P: AsRef<Path>>(filename: P) -> Result<Self, String> {
         let string = path_as_cstring(filename.as_ref())?;
 
         let inner = FaceEncoderNetworkInner::default();
@@ -43,16 +56,6 @@ impl FaceEncoderNetwork {
         } else {
             Ok(Self { inner })
         }
-    }
-}
-
-#[cfg(feature = "embed-fe-nn")]
-impl Default for FaceEncoderNetwork {
-    fn default() -> Self {
-        Self::new(crate::embed::path_for_file(
-            "dlib_face_recognition_resnet_model_v1.dat",
-        ))
-        .unwrap()
     }
 }
 

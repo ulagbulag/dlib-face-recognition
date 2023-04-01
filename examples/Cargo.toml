@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "draw",
+    "compare_faces"
+]
+
+[workspace.dependencies]
+dlib-face-recognition = { path = "../" }
+image = { version = "0.24.5"}
+clap = { version = "4.2.1"}

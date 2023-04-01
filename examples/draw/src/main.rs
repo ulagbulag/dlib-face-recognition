@@ -1,6 +1,10 @@
 use image::*;
-
 use dlib_face_recognition::*;
+use clap::Parser;
+
+mod args;
+
+use args::Args;
 
 fn draw_rectangle(image: &mut RgbImage, rect: &Rectangle, colour: Rgb<u8>) {
     for x in rect.left..rect.right {
@@ -28,18 +32,21 @@ fn tick<R>(name: &str, f: impl Fn() -> R) -> R {
     result
 }
 
-#[cfg(feature = "embed-all")]
 fn main() {
-    let mut args = std::env::args().skip(1);
-    let input = args.next().unwrap();
-    let output = args.next().unwrap();
+    let args = Args::parse();
 
-    let mut image = image::open(input).unwrap().to_rgb8();
+    let mut image = image::open(args.input_image).unwrap().to_rgb8();
     let matrix = ImageMatrix::from_image(&image);
 
     let detector = FaceDetector::default();
-    let cnn_detector = FaceDetectorCnn::default();
-    let landmarks = LandmarkPredictor::default();
+
+    let Ok(cnn_detector) = FaceDetectorCnn::default() else {
+        panic!("Unable to load cnn face detector!");
+    };
+
+    let Ok(landmarks) = LandmarkPredictor::default() else {
+        panic!("Unable to load landmark predictor!");
+    };
 
     let red = Rgb([255, 0, 0]);
     let green = Rgb([0, 255, 0]);
@@ -70,10 +77,9 @@ fn main() {
         }
     }
 
-    image.save(&output).unwrap();
-}
-
-#[cfg(not(feature = "embed-all"))]
-fn main() {
-    panic!("You need to run this example with '--features embed-all'.");
+    if let Err(e) = image.save(&args.output_image) {
+        println!("Error saving the image: {e}");
+    } else {
+        println!("Output image saved to {}", &args.output_image);
+    }
 }
