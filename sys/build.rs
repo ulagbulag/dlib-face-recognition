@@ -122,9 +122,8 @@ fn build(src: &Path) {
 }
 
 #[cfg(target_family = "windows")]
-fn build(src: &PathBuf) {
+fn build(src: &Path) {
     use fs_extra::dir::CopyOptions;
-    use std::fs::File;
     use std::path::PathBuf;
 
     let dst = cmake::Config::new(src)
@@ -175,6 +174,7 @@ fn build(src: &PathBuf) {
 
 #[cfg(target_family = "windows")]
 fn modify_dlib_msvc_filename(dst: &Path) {
+    use std::fs::File;
     let src_lib_prefix = if cfg!(windows) { "" } else { "lib" };
     let src_lib_suffix = if cfg!(windows) { "lib" } else { "a" };
     let target = env::var("TARGET").unwrap();
