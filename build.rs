@@ -31,5 +31,7 @@ fn main() {
             config.include(path);
         }
     }
-    config.build("src/lib.rs");
+    config
+    .flag("-std=c++14")
+    .build("src/lib.rs");
 }
