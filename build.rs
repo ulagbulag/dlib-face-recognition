@@ -24,6 +24,7 @@ fn main() {
         println!("cargo:rustc-link-lib=dlib");
         println!("cargo:rustc-link-lib=blas");
         println!("cargo:rustc-link-lib=lapack");
+        config.flag_if_supported("-std=c++14");
     } 
 
     if let Ok(paths) = std::env::var("DEP_DLIB_INCLUDE") {
