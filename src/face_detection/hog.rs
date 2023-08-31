@@ -1,6 +1,8 @@
 use super::base::FaceDetectorTrait;
 use super::location::FaceLocations;
 use crate::matrix::ImageMatrix;
+use std::cell::UnsafeCell;
+use std::marker::PhantomData;
 
 #[derive(Clone)]
 /// A Face detector that uses a HOG feature descriptor.
@@ -9,6 +11,15 @@ use crate::matrix::ImageMatrix;
 /// as the neural network face detector.
 pub struct FaceDetector {
     inner: FaceDetectorInner,
+    /// Face detector relies on
+    /// [scan_fhog_pyramid](http://dlib.net/dlib/image_processing/scan_fhog_pyramid_abstract.h.html#scan_fhog_pyramid)
+    /// which is not thread safe, this hack makes Rust aware of that. On nightly, we could use
+    /// [negative impls](https://github.com/rust-lang/rust/issues/68318)
+    ///
+    /// Because [`UnsafeCell`] is [`Send`] (doesn't have thread local data), but not [`Sync`]
+    /// (has interior mutabilitin in a not thread safe way), which captures the sutiation with
+    /// scan_fhog_pyramid perfectly (you need a mutex for concurrent access to it)
+    data: PhantomData<UnsafeCell<()>>,
 }
 
 cpp_class!(unsafe struct FaceDetectorInner as "dlib::frontal_face_detector");
@@ -24,7 +35,10 @@ impl FaceDetector {
             })
         };
 
-        Self { inner }
+        Self {
+            inner,
+            data: std::marker::PhantomData::default(),
+        }
     }
 }
 

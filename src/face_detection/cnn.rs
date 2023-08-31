@@ -11,6 +11,14 @@ use crate::matrix::ImageMatrix;
 #[derive(Clone)]
 pub struct FaceDetectorCnn {
     inner: FaceDetectorCnnInner,
+    /// Loss layers don't specify whether thei are thread safe, so we asume they
+    /// need to be held behind a mutex as stated in the dlib
+    /// [documentation](http://dlib.net/intro.html)
+    ///
+    /// [`UnsafeCell`] is not [`Sync`] which forbids access to a
+    /// shared reference (&Self) from multiple threads (requires a mutex),
+    /// but implements [`Send`]
+    data: std::marker::PhantomData<std::cell::UnsafeCell<()>>,
 }
 
 cpp_class!(unsafe struct FaceDetectorCnnInner as "face_detection_cnn");
@@ -54,7 +62,10 @@ impl FaceDetectorCnn {
                 filename.as_ref().display()
             ))
         } else {
-            Ok(Self { inner })
+            Ok(Self {
+                inner,
+                data: std::marker::PhantomData::default(),
+            })
         }
     }
 }
