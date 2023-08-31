@@ -5,7 +5,10 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+build-native = ["dlib-face-recognition/build-native"]
+
 [dependencies]
+clap = { workspace = true, features = ["derive"] }
 dlib-face-recognition = { workspace = true, features = ["embed-all"] }
 image = { workspace = true }
-clap = { workspace = true, features = ["derive"] }

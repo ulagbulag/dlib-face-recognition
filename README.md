@@ -24,7 +24,7 @@ The original work is [here (unmaintaned; since Aug 2021)](https://github.com/exp
 
 * Linux { aarch64, x86_64 }
     - Ubuntu 20.04
-* MacOS { x86_64 }
+* MacOS { aarch64, x86_64 }
     - Apple Silicon (`Apple M1`)
 * Windows { x86_64 }
     - Windows 10
@@ -36,9 +36,10 @@ Besides, you may claim us whether the specific platform should support it throug
 
 * cmake
 * blas
+* dlib (optional; can be skipped by enabling `build-native` feature)
 * lapack
 
-For Windows, [`vcpkg`](https://vcpkg.io/en/getting-started.html) may help building both `blas` and `lapack` .
+For Windows, [ `vcpkg` ](https://vcpkg.io/en/getting-started.html) may help building both `blas` and `lapack` .
 For other platforms such as Linux, package managers should support installing them.
 
 ### Building Native library
@@ -54,11 +55,11 @@ For other platforms such as Linux, package managers should support installing th
     cargo build
     ```
 
-The C++ library `dlib` will be installed via `dlib-face-recognition-sys` when the `build-native`feature flag is enabled.
+The C++ library `dlib` will be installed via `dlib-face-recognition-sys` when the `build-native` feature flag is enabled.
 
 For the build, this library uses `cmake` , so please make sure to have [ `cmake` ](https://cmake.org/install/) .
 
-The `build-native` flag is disabled by default, offering increased build times.
+The `build-native` flag is **disabled by default**, offering increased build times.
 
 ### Building Rust package
 

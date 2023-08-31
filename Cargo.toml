@@ -19,7 +19,7 @@ build = "build.rs"
 include = ["src/**/*.rs", "build.rs", "Cargo.toml", "LICENSE"]
 
 [package.metadata.docs.rs]
-features = ["build-native"] # otehrwise the build will fail in docs.rs
+features = ["build-native"] # otherwise the build will fail in docs.rs
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -36,7 +36,7 @@ embed-lp = ["embed-any"]
 [dependencies]
 cpp = "0.5"
 dlib-face-recognition-sys = { path = "sys", version = "19.24.0-rc.1", default-features = false, optional = true }
-image = { version = "0.24.6", default-features = false }
+image = { version = "0.24", default-features = false }
 bzip2 = { version = "0.4", optional = true }
 reqwest = { version = "0.11", optional = true, features = ["blocking"] }
 
