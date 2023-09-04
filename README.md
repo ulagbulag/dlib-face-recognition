@@ -35,11 +35,12 @@ Besides, you may claim us whether the specific platform should support it throug
 ### Dependencies
 
 * cmake
-* blas
+* Blas
+* Openblas (optional; overrides blas for better performance when enabling `openblas` feature )
 * dlib (optional; can be skipped by enabling `build-native` feature)
 * lapack
 
-For Windows, [ `vcpkg` ](https://vcpkg.io/en/getting-started.html) may help building both `blas` and `lapack` .
+For Windows, [ `vcpkg` ](https://vcpkg.io/en/getting-started.html) may help building both `Blas` and `lapack` .
 For other platforms such as Linux, package managers should support installing them.
 
 ### Building Native library

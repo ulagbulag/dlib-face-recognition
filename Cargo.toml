@@ -25,6 +25,7 @@ features = ["build-native"] # otherwise the build will fail in docs.rs
 
 [features]
 build-native = ["dlib-face-recognition-sys"]
+openblas = []
 
 embed-all = ["embed-fd-nn", "embed-fe-nn", "embed-lp"]
 embed-any = ["reqwest", "bzip2"]
