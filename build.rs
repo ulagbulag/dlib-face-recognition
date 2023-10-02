@@ -35,7 +35,7 @@ fn set_blas_library() -> BlasLibrary {
 
     #[cfg(not(feature = "openblas"))]
     {
-        if system_is_debian() {
+        if cfg!(target_family = "windows") || system_is_debian() {
             BlasLibrary::Blas
         } else {
             BlasLibrary::Cblas
