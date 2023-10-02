@@ -2,8 +2,8 @@
 fn system_is_debian() -> bool {
     cfg!(target_os = "linux")
         && ::sys_info::linux_os_release()
-        .map(|os| os.id_like.map(|id| id == "debian").unwrap_or_default())
-        .unwrap_or_default()
+            .map(|os| os.id_like.map(|id| id == "debian").unwrap_or_default())
+            .unwrap_or_default()
 }
 
 #[allow(dead_code)]
@@ -28,11 +28,13 @@ impl BlasLibrary {
 }
 
 fn set_blas_library() -> BlasLibrary {
-    #[cfg(feature = "openblas")] {
+    #[cfg(feature = "openblas")]
+    {
         BlasLibrary::Openblas
     }
 
-    #[cfg(not(feature = "openblas"))] {
+    #[cfg(not(feature = "openblas"))]
+    {
         if system_is_debian() {
             BlasLibrary::Blas
         } else {

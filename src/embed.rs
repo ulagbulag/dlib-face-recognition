@@ -1,19 +1,19 @@
-use std::path::PathBuf;
 use std::fmt;
+use std::path::PathBuf;
 
-pub enum ModelFile{
+pub enum ModelFile {
     FaceDetectorCnn,
     FaceEncoderNetwork,
-    LandmarkPredictor
+    LandmarkPredictor,
 }
 
 impl fmt::Display for ModelFile {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-       match self {
-           ModelFile::FaceDetectorCnn => write!(f, "mmod_human_face_detector.dat"),
-           ModelFile::FaceEncoderNetwork => write!(f, "dlib_face_recognition_resnet_model_v1.dat"),
-           ModelFile::LandmarkPredictor => write!(f, "shape_predictor_68_face_landmarks.dat")
-       }
+        match self {
+            ModelFile::FaceDetectorCnn => write!(f, "mmod_human_face_detector.dat"),
+            ModelFile::FaceEncoderNetwork => write!(f, "dlib_face_recognition_resnet_model_v1.dat"),
+            ModelFile::LandmarkPredictor => write!(f, "shape_predictor_68_face_landmarks.dat"),
+        }
     }
 }
 
@@ -27,7 +27,7 @@ pub fn path_for_file(filename: &ModelFile) -> PathBuf {
         .join(filename.to_string())
 }
 
-pub fn check_file_or_download(file: &ModelFile){
+pub fn check_file_or_download(file: &ModelFile) {
     if !download_path().exists() {
         std::fs::create_dir(download_path()).unwrap();
     }
@@ -39,11 +39,14 @@ pub fn check_file_or_download(file: &ModelFile){
 
         download_and_unzip(&client, file);
     } else {
-        println!("{} Already exists in files/ folder, skipping download.", file);
+        println!(
+            "{} Already exists in files/ folder, skipping download.",
+            file
+        );
     }
 }
 
-pub fn download_and_unzip(client: &reqwest::blocking::Client,file: &ModelFile) {
+pub fn download_and_unzip(client: &reqwest::blocking::Client, file: &ModelFile) {
     use bzip2::read::*;
 
     let base_url: &str = "http://dlib.net/files/";
