@@ -23,6 +23,7 @@ The original work is [here (unmaintaned; since Aug 2021)](https://github.com/exp
 ### Supported Platforms
 
 * Linux { aarch64, x86_64 }
+    - ArchLinux
     - Ubuntu 20.04
 * MacOS { aarch64, x86_64 }
     - Apple Silicon (`Apple M1`)
@@ -42,6 +43,13 @@ Besides, you may claim us whether the specific platform should support it throug
 
 For Windows, [ `vcpkg` ](https://vcpkg.io/en/getting-started.html) may help building both `Blas` and `lapack` .
 For other platforms such as Linux, package managers should support installing them.
+
+#### Installing Dependencies
+
+##### ArchLinux
+```sh
+sudo pacman -S blas-openblas cmake
+```
 
 ### Building Native library
 
