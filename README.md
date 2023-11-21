@@ -49,6 +49,9 @@ For other platforms such as Linux, package managers should support installing th
 ##### ArchLinux
 ```sh
 sudo pacman -S blas-openblas cmake
+
+# optional[dlib]
+paru -S dlib
 ```
 
 ### Building Native library
