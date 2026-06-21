@@ -1,7 +1,7 @@
 use std::ops::Deref;
 use std::slice;
 
-use crate::geometry::Point;
+use crate::geometry::DPoint;
 
 cpp_class!(
     /// A wrapper around the dlib `full_object_detection` class, which internally has a `std::vector<point>`.
@@ -10,7 +10,7 @@ cpp_class!(
 );
 
 impl Deref for FaceLandmarks {
-    type Target = [Point];
+    type Target = [DPoint];
 
     fn deref(&self) -> &Self::Target {
         let len = unsafe {
@@ -24,7 +24,7 @@ impl Deref for FaceLandmarks {
         } else {
             unsafe {
                 // We can do this because we know that it uses a std::vector internally and part(0) is the first item
-                let pointer = cpp!([self as "dlib::full_object_detection*"] -> *const Point as "dlib::point*" {
+                let pointer = cpp!([self as "dlib::full_object_detection*"] -> *const DPoint as "dlib::dpoint*" {
                     return &self->part(0);
                 });
 

@@ -1,4 +1,4 @@
-use std::{ops::Deref, os::raw::c_long};
+use std::{ops::Deref, os::raw::{c_double, c_long}};
 
 #[derive(Copy, Clone, Default, Debug, PartialEq, Eq)]
 #[repr(C)]
@@ -32,6 +32,37 @@ impl Point {
         self.0[1]
     }
 }
+
+pub struct DPoint([c_double; 2]);
+
+impl AsRef<[c_double]> for DPoint {
+    fn as_ref(&self) -> &[c_double] {
+        &self.0
+    }
+}
+
+impl Deref for DPoint {
+    type Target = [c_double; 2];
+
+    fn deref(&self) -> &[c_double; 2] {
+        &self.0
+    }
+}
+
+impl DPoint {
+    pub fn new(x: c_double, y: c_double) -> Self {
+        Self([x, y])
+    }
+
+    pub fn x(&self) -> c_double {
+        self.0[0]
+    }
+
+    pub fn y(&self) -> c_double {
+        self.0[1]
+    }
+}
+
 
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 #[repr(C)]
