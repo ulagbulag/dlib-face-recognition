@@ -17,7 +17,7 @@ cpp_class!(unsafe struct LandmarkPredictorInner as "dlib::shape_predictor");
 impl LandmarkPredictor {
     #[cfg(feature = "embed-lp")]
     pub fn default() -> Result<Self, String> {
-        use crate::embed::{check_file_or_download, ModelFile};
+        use crate::embed::{ModelFile, check_file_or_download};
 
         let filename = ModelFile::LandmarkPredictor;
 

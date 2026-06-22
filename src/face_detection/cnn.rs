@@ -26,7 +26,7 @@ cpp_class!(unsafe struct FaceDetectorCnnInner as "face_detection_cnn");
 impl FaceDetectorCnn {
     #[cfg(feature = "embed-fd-nn")]
     pub fn default() -> Result<Self, String> {
-        use crate::embed::{check_file_or_download, ModelFile};
+        use crate::embed::{ModelFile, check_file_or_download};
 
         let filename = ModelFile::FaceDetectorCnn;
 

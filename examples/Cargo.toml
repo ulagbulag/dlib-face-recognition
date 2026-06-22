@@ -1,7 +1,0 @@
-[workspace]
-members = ["draw", "compare_faces"]
-
-[workspace.dependencies]
-clap = { version = "4.4" }
-dlib-face-recognition = { path = "../" }
-image = { version = "0.24" }

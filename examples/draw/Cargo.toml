@@ -1,7 +1,7 @@
 [package]
 name = "draw"
 version = "0.1.0"
-edition = "2021"
+edition = { workspace = true }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -11,4 +11,4 @@ build-native = ["dlib-face-recognition/build-native"]
 [dependencies]
 clap = { workspace = true, features = ["derive"] }
 dlib-face-recognition = { workspace = true, features = ["embed-all"] }
-image = { workspace = true }
+image = { workspace = true, features = ["jpeg", "png"] }

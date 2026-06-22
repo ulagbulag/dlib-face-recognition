@@ -1,6 +1,6 @@
-use dlib_face_recognition::*;
-use dlib_face_recognition::FaceDetectorCnn;
 use clap::Parser;
+use dlib_face_recognition::FaceDetectorCnn;
+use dlib_face_recognition::*;
 
 mod args;
 
@@ -34,9 +34,13 @@ fn main() {
         panic!("Error loading Face Encoder.");
     };
 
-    let face_locations_photo_1 = tick("FaceDetectorCnn", || cnn_detector.face_locations(&matrix_photo_1));
+    let face_locations_photo_1 = tick("FaceDetectorCnn", || {
+        cnn_detector.face_locations(&matrix_photo_1)
+    });
 
-    let face_locations_photo_2 = tick("FaceDetectorCnn", || cnn_detector.face_locations(&matrix_photo_2));
+    let face_locations_photo_2 = tick("FaceDetectorCnn", || {
+        cnn_detector.face_locations(&matrix_photo_2)
+    });
 
     let face_1 = face_locations_photo_1.first().unwrap();
     let face_2 = face_locations_photo_2.first().unwrap();
@@ -53,8 +57,7 @@ fn main() {
 
     let second_face_measurements = encodings_face_2.first().unwrap();
 
-    let distance = first_face_measurements.distance(second_face_measurements
-    );
+    let distance = first_face_measurements.distance(second_face_measurements);
 
     println!("Euclidean distance of chosen faces: {distance}");
 }

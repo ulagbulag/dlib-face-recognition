@@ -6,15 +6,15 @@ Example on how to run a example:
 
 ```sh
 cd examples/draw
-cargo run
+cargo run --features build-native
 ```
 
 ## Applications
 
-  * **[`draw`]**
+- **[`compare_faces`]**
 
-    Simple script that receives a image, finds all existing faces and draw a square with their locations + facial landmarks.
+  Simple script that compares two faces in terms of euclidean distance. This can be used to determine if any 2 faces are similar enough. Useful in scenarios where it may be needed to identify a unknown face, or similar cases.
 
-  * **[`compare_faces`]**
+- **[`draw`]**
 
-    Simple script that compares two faces in terms of euclidean distance. This can be used to determine if any 2 faces are similar enough. Useful in scenarios where it may be needed to identify a unknown face, or similar cases.
+  Simple script that receives a image, finds all existing faces and draw a square with their locations + facial landmarks.

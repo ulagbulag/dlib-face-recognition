@@ -9,6 +9,6 @@ pub struct Args {
     pub input_image: String,
 
     ///Path to output image
-    #[arg(short, long, default_value="../outputs/output.png")]
+    #[arg(short, long, default_value = "./output.png")]
     pub output_image: String,
 }

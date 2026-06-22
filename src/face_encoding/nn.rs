@@ -25,7 +25,7 @@ cpp_class!(unsafe struct FaceEncoderNetworkInner as "face_encoding_nn");
 impl FaceEncoderNetwork {
     #[cfg(feature = "embed-fe-nn")]
     pub fn default() -> Result<Self, String> {
-        use crate::embed::{check_file_or_download, ModelFile};
+        use crate::embed::{ModelFile, check_file_or_download};
 
         let filename = ModelFile::FaceEncoderNetwork;
 
