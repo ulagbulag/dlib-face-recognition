@@ -122,7 +122,7 @@ fn build(src: &Path) {
 }
 
 #[cfg(target_family = "windows")]
-fn build(src: &Path) {
+fn build(src: &std::path::Path) {
     use fs_extra::dir::CopyOptions;
     use std::path::PathBuf;
 
@@ -193,7 +193,7 @@ fn modify_dlib_msvc_filename(dst: &Path) {
             let dlib_modified_name = dst
                 .join("lib")
                 .join(format!("{}dlib.{}", &src_lib_prefix, &src_lib_suffix));
-            File::create(dlib_modified_name.clone()).unwrap();
+            std::fs::File::create(dlib_modified_name.clone()).unwrap();
             std::fs::copy(source, dlib_modified_name).unwrap();
         }
     };
